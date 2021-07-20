@@ -1,7 +1,7 @@
-import { PgnParserService } from './PgnParser.service';
-const twoMoves = '1. c4 b6 2. d4 e6';
-const fiveMoves = '1. c4 b6 2. d4 e6 3. a3 Bb7 4. Nc3 Nf6 5. d5 Bd6';
-const aLotOfMoves = `1. c4 b6 2. d4 e6 3. a3 Bb7 4. Nc3 Nf6 5. d5 Bd6 6. Nf3 O-O 7. e4 exd5 8. exd5 c6 9. Be2 Na6 10. O-O Nc7 11. Bg5 Re8 12. Qd2 h6 13. Bh4 cxd5 14. cxd5 a6 15. Rfe1 b5 16. Nd4 b4 17. axb4 Bxb4 18. Bf3 Rxe1+ 19. Rxe1 Bxd5 20. Nf5 Bxf3 21. gxf3 Ncd5 22. Kh1 Nxc3 23. Rg1 g6 24. Qxh6`;
+import { PgnParserService, Move } from './PgnParser.service';
+const twoTurns = '1. c4 b6 2. d4 e6';
+const fiveTurns = '1. c4 b6 2. d4 e6 3. a3 Bb7 4. Nc3 Nf6 5. d5 Bd6';
+const aLotOfTurns = `1. c4 b6 2. d4 e6 3. a3 Bb7 4. Nc3 Nf6 5. d5 Bd6 6. Nf3 O-O 7. e4 exd5 8. exd5 c6 9. Be2 Na6 10. O-O Nc7 11. Bg5 Re8 12. Qd2 h6 13. Bh4 cxd5 14. cxd5 a6 15. Rfe1 b5 16. Nd4 b4 17. axb4 Bxb4 18. Bf3 Rxe1+ 19. Rxe1 Bxd5 20. Nf5 Bxf3 21. gxf3 Ncd5 22. Kh1 Nxc3 23. Rg1 g6 24. Qxh6`;
 const invalidStrings = [
   'c4 b6 2. d4 e6',
   '2. c4 b6 3. d4 e6',
@@ -18,38 +18,91 @@ describe('|-> Pgn Parser Service', () => {
   beforeEach(() => {
     parser = new PgnParserService();
   });
-  it('should have a parse function', () => {
-    expect(PgnParserService).toBeDefined();
-    expect(parser.parse).toBeDefined();
-  });
 
-  it('should count moves', () => {
-    let moves = parser.parse(twoMoves);
-    expect(moves).toHaveLength(2);
-    moves = parser.parse(fiveMoves);
-    expect(moves).toHaveLength(5);
-    moves = parser.parse(aLotOfMoves);
-    expect(moves).toHaveLength(24);
-  });
+  describe('|-> Pgn Validation', () => {
+    it('should throw an error if it doesnt start by a `1. `', () => {
+      const parser = new PgnParserService();
+      const invalidStr = 'c4 b6 2. d4 e6';
+      const invalidStr2 = '2. c4 b6 3. d4 e6';
+      expect(() => parser.parse(invalidStr)).toThrow();
+      expect(() => parser.parse(invalidStr2)).toThrow();
+    });
 
-  it('should throw an error if it doesnt start by a `1. `', () => {
-    const parser = new PgnParserService();
-    const invalidStr = 'c4 b6 2. d4 e6';
-    const invalidStr2 = '2. c4 b6 3. d4 e6';
-    expect(() => parser.parse(invalidStr)).toThrow();
-    expect(() => parser.parse(invalidStr2)).toThrow();
-  });
+    it('should throw an error for non valid pgn chars', () => {
+      const parser = new PgnParserService();
 
-  it('should throw an error for non valid pgn chars', () => {
-    const parser = new PgnParserService();
+      invalidStrings.forEach(s => {
+        expect(() => parser.parse(s)).toThrow();
+      });
+    });
 
-    invalidStrings.forEach(s => {
-      expect(() => parser.parse(s)).toThrow();
+    it('should accept valid pgn chars : x ! ? `', () => {
+      const parser = new PgnParserService();
+      expect(() => parser.parse(validPgn)).not.toThrow();
     });
   });
 
-  it('should accept valid pgn chars : x ! ? `', () => {
-    const parser = new PgnParserService();
-    expect(() => parser.parse(validPgn)).not.toThrow();
+  it('should count turns', () => {
+    let turns = parser.parse(twoTurns);
+    expect(turns).toHaveLength(2);
+    turns = parser.parse(fiveTurns);
+    expect(turns).toHaveLength(5);
+    turns = parser.parse(aLotOfTurns);
+    expect(turns).toHaveLength(24);
+  });
+
+  it('each turn should be an array with at least one move and max two', () => {
+    let turns = parser.parse(twoTurns);
+    turns.forEach(t => {
+      expect(Array.isArray(t)).toBeTruthy();
+      expect(t.length).toBeGreaterThanOrEqual(1);
+      expect(t.length).toBeLessThanOrEqual(2);
+      t.forEach((m: any) => {
+        console.log(m);
+        expect(m).toBeInstanceOf(Move);
+      });
+    });
+  });
+
+  describe('|-> Move Class', () => {
+    it('should  know assign each move the the correct color', () => {
+      const turns = parser.parse(aLotOfTurns);
+      turns.forEach(turn => {
+        expect(turn[0].color).toEqual('White');
+        if (turn[1]) {
+          expect(turn[1].color).toEqual('Black');
+        }
+      });
+    });
+    const destinations: [string, [number, number]][] = [
+      ['e4', [4, 4]],
+      ['b6', [2, 1]],
+      ['d4', [4, 3]],
+      ['a3', [5, 0]],
+      ['Rfe1', [7, 4]],
+    ];
+
+    const pieces: [string, string][] = [
+      ['e4', "Pawn"],
+      ['Nc3', "Knight"],
+      ['Bd6', "Bishop"],
+
+      ['Rfe1 ', "Rook"],
+      ['exd5 ', "Pawn"],
+    ];
+
+    it('should detect the landing square', () => {
+      destinations.forEach(([str, expected], i) => {
+        const move = new Move(str, i);
+        expect(move.destination).toEqual(expected);
+      });
+    });
+
+    it('should detect the Piece being moved', () => {
+      pieces.forEach(([str, expected], i) => {
+        const move = new Move(str, i);
+        expect(move.piece).toEqual(expected);
+      });
+    });
   });
 });
