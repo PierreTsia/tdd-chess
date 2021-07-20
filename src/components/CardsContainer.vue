@@ -27,7 +27,7 @@ export default defineComponent({
     watch(
       () => props.cards,
       () => {
-        console.log('Watch props.selected function called with args:');
+
       },
     );
 

@@ -1,46 +1,19 @@
-const NUMBER_FOLLOWED_BY_DOT: RegExp = /^\d+(\.+)$/;
-const VALID_CHESS_MOVE: RegExp = /(?:[PNBRQK]?[a-h]?[1-8]?x?[a-h][1-8](?:\=[PNBRQK])?|O(-?O){1,2})[\+#]?(\s*[\!\?]+)?/;
-const VALID_END_OF_GAME = ['1/2-1/2', '1-0', '0-1'];
-const COLS: string = 'a b c d e f g h';
-const ROWS: string = '8 7 6 5 4 3 2 1';
-
-export enum ChessPieceSlug {
-  P = 'Pawn',
-  K = 'King',
-  Q = 'Queen',
-  B = 'Bishop',
-  N = 'Knight',
-  R = 'Rook',
-}
-
-const mapArray = (colsOrRows: string): any[] => {
-  return colsOrRows.split(' ').map((val, i) => [val, i]);
-};
-
-const mapPieces = (): [string, ChessPieceSlug][] => {
-  return Object.entries(ChessPieceSlug).map(([key, value]) => [key, value]);
-};
-
-export const cols: Map<string, number> = new Map(mapArray(COLS));
-export const rows: Map<string, number> = new Map(mapArray(ROWS));
-export const pieces: Map<string, ChessPieceSlug> = new Map(mapPieces());
-export enum Color {
-  White = 'White',
-  Black = 'Black',
-}
-
-type Coords = [number, number];
+import { ChessPieceSlug, Color, Coords } from './../types';
+import { cols, NUMBER_FOLLOWED_BY_DOT, pieces, rows, VALID_CHESS_MOVE, VALID_END_OF_GAME } from './../constants';
+import { PieceFactory as Factory } from './../pieces/piece.factory';
 
 export class Move {
   readonly _pgn!: string;
   readonly color: Color;
   piece!: ChessPieceSlug;
   destination: Coords;
+  origins: Coords[];
   constructor(moveStr: any, i: number) {
     this._pgn = moveStr;
     this.color = i % 2 === 0 ? Color.White : Color.Black;
     this.destination = this.getDestination(moveStr);
     this.piece = this.getPiece(moveStr);
+    this.origins = this.getOrigins(this.destination, this.piece);
   }
 
   private getDestination(str: string): Coords {
@@ -49,12 +22,20 @@ export class Move {
   }
 
   private getPiece(str: string): ChessPieceSlug {
-    const fistChar = str[0]
+    const fistChar = str[0];
     if (!pieces.has(fistChar)) {
       return ChessPieceSlug.P;
     } else {
       return pieces.get(fistChar)!;
     }
+  }
+  private getOrigins(destination: Coords, piece: ChessPieceSlug): Coords[] {
+    let origins: Coords[] = [[0, 0]];
+    if (piece === ChessPieceSlug.P) {
+      const pawn = new Factory.Pawn({ color: this.color });
+      origins = pawn.possibleOrigins(destination);
+    }
+    return origins;
   }
 }
 
