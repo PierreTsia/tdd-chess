@@ -1,23 +1,33 @@
 <template>
-  <div :class="[`col-span-1`, `${square.color === colors.Black ? 'bg-green-900' : 'bg-white'}`]"></div>
+  <div :class="[`col-span-1`, `${square.color === colors.Black ? 'bg-green-900' : 'bg-white'}`]">
+    <div v-if="square.piece" class="d-block h-full h-full w-full relative">
+      <component :is="pieceComponent" class="absolute bottom-2 left-1 md:bottom-3 md:left-3 w-3/4 h-3/4" />
+    </div>
+  </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { Color } from '/@/core/types';
-import { Square } from '/@/core/board/square';
-type SquareProps = {
-  square: Square;
-};
+import * as pieces from '/@/ui/pieces/index';
 
 export default defineComponent({
   name: 'Square',
+  components: { ...pieces },
   props: {
     square: {
-      default: () => {},
+      required: true,
     },
   },
-  setup(props: SquareProps) {
-    return { colors: Color };
+  setup(props: { square: any }) {
+    const pieceComponent = computed(() => {
+      if (!props.square.piece) {
+        return null;
+      }
+
+      return `${props.square.piece.type}${props.square.piece.color}`;
+    });
+
+    return { colors: Color, pieceComponent };
   },
 });
 </script>

@@ -1,8 +1,9 @@
 import { onMounted, ref, Ref } from 'vue';
 import { ChessBoard } from '/@/core/board/board.service';
+import { Square } from '/@/core/board/square';
 
 export interface BoardComposition {
-  board: Ref<any[][]>;
+  board: Ref<Square[][]>;
 }
 
 export function useChessBoard(): BoardComposition {

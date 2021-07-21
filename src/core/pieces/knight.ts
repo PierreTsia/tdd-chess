@@ -8,7 +8,7 @@ interface IKnight extends IPiece {
 
 export class Knight implements IKnight {
   readonly color: Color;
-  readonly type: ChessPieceSlug = ChessPieceSlug.P;
+  readonly type: ChessPieceSlug = ChessPieceSlug.N;
   constructor(opts: any) {
     this.color = opts.color;
   }

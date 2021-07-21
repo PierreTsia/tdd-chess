@@ -8,7 +8,7 @@ interface IBishop extends IPiece {
 
 export class Bishop implements IBishop {
   readonly color: Color;
-  readonly type: ChessPieceSlug = ChessPieceSlug.P;
+  readonly type: ChessPieceSlug = ChessPieceSlug.B;
   constructor(opts: any) {
     this.color = opts.color;
   }

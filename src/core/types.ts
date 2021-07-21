@@ -1,12 +1,3 @@
-export enum ChessPieceSlug {
-  P = 'Pawn',
-  K = 'King',
-  Q = 'Queen',
-  B = 'Bishop',
-  N = 'Knight',
-  R = 'Rook',
-}
-
 export enum Color {
   White = 'White',
   Black = 'Black',
@@ -22,3 +13,12 @@ export enum Direction {
 }
 
 export type Diagonal = [Direction.Up | Direction.Down, Direction.Left | Direction.Right];
+
+export enum ChessPieceSlug {
+  P = 'Pawn',
+  K = 'King',
+  Q = 'Queen',
+  B = 'Bishop',
+  N = 'Knight',
+  R = 'Rook',
+}

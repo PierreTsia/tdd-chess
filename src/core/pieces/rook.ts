@@ -8,7 +8,7 @@ interface IRook extends IPiece {
 
 export class Rook implements IRook {
   readonly color: Color;
-  readonly type: ChessPieceSlug = ChessPieceSlug.P;
+  readonly type: ChessPieceSlug = ChessPieceSlug.R;
   constructor(opts: any) {
     this.color = opts.color;
   }
