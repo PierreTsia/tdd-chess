@@ -22,9 +22,12 @@ export class Pawn implements IPawn {
     return this.color === Color.White ? [6, 7] : [0, 1];
   }
 
+  getRange(start: Coords) {
+    return this.possibleOrigins(start);
+  }
+
   possibleOrigins([row, col]: Coords): Coords[] {
     if (this.invalidRows.includes(row)) {
-      debugger;
       throw new Error('Not allowed destination');
     }
     const count = this.isAPossibleFirstMove(row) ? [1, 2] : [1];

@@ -45,7 +45,6 @@ describe('|-> Pgn Parser Service', () => {
       expect(t.length).toBeGreaterThanOrEqual(1);
       expect(t.length).toBeLessThanOrEqual(2);
       t.forEach((m: any) => {
-        console.log(m);
         expect(m).toBeInstanceOf(Move);
       });
     });
@@ -59,7 +58,7 @@ describe('|-> Pgn Parser Service', () => {
       ['a3', [5, 0]],
       ['Rfe1', [7, 4]],
     ];
-    const pawnsOrigins: [string, number[][]][] = [
+    /*const pawnsOrigins: [string, number[][]][] = [
       [
         'e4',
         [
@@ -76,7 +75,7 @@ describe('|-> Pgn Parser Service', () => {
         ],
       ],
       ['a3', [[4, 0]]],
-    ];
+    ];*/
     const pieces: [string, string][] = [
       ['e4', 'Pawn'],
       ['Nc3', 'Knight'],
@@ -110,11 +109,11 @@ describe('|-> Pgn Parser Service', () => {
       });
     });
 
-    it('should detect the origin coordinates from destination and Piece', () => {
+    /*it('should detect the origin coordinates from destination and Piece', () => {
       pawnsOrigins.forEach(([str, expected], i) => {
         const move = new Move(str, i);
         expect(move.origins).toEqual(expected);
       });
-    });
+    });*/
   });
 });

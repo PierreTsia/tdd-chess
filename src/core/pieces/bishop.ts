@@ -1,9 +1,9 @@
 import { ChessPieceSlug, Color, Coords } from './../types';
-import { IPiece } from './piece.factory';
+import { IPiece, ConditionFn } from './piece.factory';
 import { BoardHelpers } from '../board/board.helpers';
 
 interface IBishop extends IPiece {
-  possibleOrigins(c: Coords): Coords[];
+
 }
 
 export class Bishop implements IBishop {
@@ -13,7 +13,8 @@ export class Bishop implements IBishop {
     this.color = opts.color;
   }
 
-  possibleOrigins(origin: Coords): Coords[] {
-    return BoardHelpers.getDiagnonals(origin);
+
+  getRange(start: Coords, conditionFn?: ConditionFn[]): Coords[] {
+    return BoardHelpers.getDiagnonals(start);
   }
 }

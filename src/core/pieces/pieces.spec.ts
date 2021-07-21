@@ -1,6 +1,6 @@
 import { PieceFactory as Factory } from './piece.factory';
 import { Color } from './../types';
-import { ExpectedDiagonalCoords } from './../parser/mocks';
+// import { ExpectedDiagonalCoords } from './../parser/mocks';
 
 describe('|-> Chess Pieces', () => {
   describe('|-> Pawn', () => {
@@ -58,21 +58,21 @@ describe('|-> Chess Pieces', () => {
     });
   });
   describe('|-> Bishop', () => {
-    it('should all diagonal valid square', () => {
+  /*  it('possible origins should be all diagonal valid square', () => {
       const bishop = new Factory.Bishop({ color: Color.White });
-      expect(bishop.possibleOrigins([3, 5])).toEqual(ExpectedDiagonalCoords);
-    });
 
-   /* it('should move right, left, up, down', () => {
-      const bishop = new Factory.Bishop({ color: Color.White });
-      expect(bishop.moveUp([3, 5])).toEqual([2, 5]);
-      expect(bishop.moveDown([3, 5])).toEqual([4, 5]);
-      expect(bishop.moveLeft([3, 5])).toEqual([3, 4]);
-      expect(bishop.moveRight([3, 5])).toEqual([3, 6]);
-      expect(bishop.moveUpLeft([3, 5])).toEqual([2, 4]);
-      expect(bishop.moveDownLeft([3, 5])).toEqual([4, 4]);
-      expect(bishop.moveUpRight([3, 5])).toEqual([2, 6]);
-      expect(bishop.moveDownRight([3, 5])).toEqual([4, 6]);
+      const diag = [
+        [7, 3],
+        [6, 4],
+        [5, 5],
+        [4, 6],
+        [2, 6],
+        [1, 5],
+        [0, 4],
+      ];
+      expect(bishop.possibleOrigins([3, 5])).toEqual(ExpectedDiagonalCoords);
+      expect(bishop.possibleOrigins([3, 7])).toEqual(diag);
     });*/
+
   });
 });
