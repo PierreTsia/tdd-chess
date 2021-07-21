@@ -13,3 +13,12 @@ export enum Color {
 }
 
 export type Coords = [number, number];
+
+export enum Direction {
+  Up = 'Up',
+  Down = 'Down',
+  Left = 'Left',
+  Right = 'Right',
+}
+
+export type Diagonal = [Direction.Up | Direction.Down, Direction.Left | Direction.Right];
