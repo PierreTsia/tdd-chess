@@ -1,5 +1,5 @@
 import { ChessPieceSlug, Color, Coords } from './../types';
-import { Pawn, Bishop } from './pieces.index';
+import { Pawn, Bishop, Queen, Knight, King, Rook } from './index';
 
 export type ConditionFn = (args?: any) => boolean;
 
@@ -12,10 +12,10 @@ export interface IPiece {
 interface IChessPiecesClasses {
   Pawn: Pawn;
   Bishop: Bishop;
-  Knight: Bishop,
-  Queen: Bishop,
-  King: Bishop,
-  Rook: Bishop,
+  Knight: Knight;
+  Queen: Queen;
+  King: King;
+  Rook: Rook;
 }
 
 type IFactory<T> = {
@@ -25,10 +25,10 @@ type IFactory<T> = {
 const PieceFactory: IFactory<IChessPiecesClasses> = {
   Pawn: Pawn,
   Bishop: Bishop,
-  Knight: Bishop,
-  Queen: Bishop,
-  King: Bishop,
-  Rook: Bishop,
+  Knight: Knight,
+  Queen: Queen,
+  King: King,
+  Rook: Rook,
 };
 
 export { PieceFactory };
