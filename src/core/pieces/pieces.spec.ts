@@ -1,78 +1,24 @@
-import { PieceFactory as Factory } from './piece.factory';
-import { Color } from './../types';
-// import { ExpectedDiagonalCoords } from './../parser/mocks';
+import { ChessPieceSlug } from './../types';
+import { ChessBoardService } from './../../core/board/board.service';
 
 describe('|-> Chess Pieces', () => {
-  describe('|-> Pawn', () => {
-    it('should find two possible origins on white first move', () => {
-      const pawn = new Factory.Pawn({ color: Color.White });
-      expect(pawn.possibleOrigins([4, 4])).toEqual([
-        [5, 4],
-        [6, 4],
-      ]);
+  describe('|-> Moves', () => {
+    describe('|-> Pawn', () => {
+      let chessBoard: ChessBoardService;
+      beforeEach(() => {
+        chessBoard = new ChessBoardService();
+        chessBoard.init();
+        chessBoard.reset();
+      });
+
+      it('getRange(e4) should return e5', () => {
+        chessBoard.place(ChessPieceSlug.P, [4, 4]);
+        const pawn = chessBoard.board[4][4].piece;
+        const pawn2 = chessBoard.board[4][4].piece;
+        expect(pawn.getRange([4, 4], chessBoard.getState())).toEqual([[3, 4]]);
+        expect(pawn2.getRange([4, 7], chessBoard.getState())).toEqual([[3, 7]]);
+        console.log(pawn);
+      });
     });
-
-    it('should find two possible origins on black first move', () => {
-      const pawn = new Factory.Pawn({ color: Color.Black });
-      expect(pawn.possibleOrigins([3, 4])).toEqual([
-        [2, 4],
-        [1, 4],
-      ]);
-    });
-
-    it('should throw an error for white pawn if destination is first two rows', () => {
-      const pawn = new Factory.Pawn({ color: Color.White });
-      expect(() => pawn.possibleOrigins([7, 7])).toThrow();
-      expect(() => pawn.possibleOrigins([6, 6])).toThrow();
-      expect(() => pawn.possibleOrigins([0, 0])).not.toThrow();
-      expect(() => pawn.possibleOrigins([1, 1])).not.toThrow();
-    });
-
-    it('should throw an error for black pawn if destination is last two rows', () => {
-      const pawn = new Factory.Pawn({ color: Color.Black });
-      expect(() => pawn.possibleOrigins([0, 0])).toThrow();
-      expect(() => pawn.possibleOrigins([1, 1])).toThrow();
-      expect(() => pawn.possibleOrigins([6, 6])).not.toThrow();
-      expect(() => pawn.possibleOrigins([7, 7])).not.toThrow();
-    });
-
-    it('should return only one possible origin unless from possible starting row', () => {
-      const whitePawn = new Factory.Pawn({ color: Color.White });
-      expect(whitePawn.possibleOrigins([4, 4])).toEqual([
-        [5, 4],
-        [6, 4],
-      ]);
-      expect(whitePawn.possibleOrigins([4, 2])).toEqual([
-        [5, 2],
-        [6, 2],
-      ]);
-      expect(whitePawn.possibleOrigins([2, 4])).toEqual([[3, 4]]);
-
-      const blackPawn = new Factory.Pawn({ color: Color.Black });
-      expect(blackPawn.possibleOrigins([4, 4])).toEqual([[3, 4]]);
-      expect(blackPawn.possibleOrigins([4, 3])).toEqual([[3, 3]]);
-      expect(blackPawn.possibleOrigins([3, 4])).toEqual([
-        [2, 4],
-        [1, 4],
-      ]);
-    });
-  });
-  describe('|-> Bishop', () => {
-  /*  it('possible origins should be all diagonal valid square', () => {
-      const bishop = new Factory.Bishop({ color: Color.White });
-
-      const diag = [
-        [7, 3],
-        [6, 4],
-        [5, 5],
-        [4, 6],
-        [2, 6],
-        [1, 5],
-        [0, 4],
-      ];
-      expect(bishop.possibleOrigins([3, 5])).toEqual(ExpectedDiagonalCoords);
-      expect(bishop.possibleOrigins([3, 7])).toEqual(diag);
-    });*/
-
   });
 });

@@ -1,20 +1,18 @@
-import { ChessPieceSlug, Color, Coords } from './../types';
-import { IPiece, ConditionFn } from './piece.factory';
-import { BoardHelpers } from '../board/board.helpers';
+import { Coords } from './../types';
+import { IPiece } from './piece.factory';
+import { ChessMoveService } from '../board/chessMoveService';
+import { BoardState } from './../../core/board/board.service';
+import { ChessPiece } from './chess-piece';
 
-interface IRook extends IPiece {
+interface IRook extends IPiece {}
 
-}
-
-export class Rook implements IRook {
-  readonly color: Color;
-  readonly type: ChessPieceSlug = ChessPieceSlug.R;
+export class Rook extends ChessPiece implements IRook {
+  moves: ChessMoveService = new ChessMoveService();
   constructor(opts: any) {
-    this.color = opts.color;
+    super(opts);
   }
 
-
-  getRange(start: Coords, conditionFn?: ConditionFn[]): Coords[] {
-    return BoardHelpers.getDiagnonals(start);
+  getRange(start: Coords, board: BoardState): Coords[] {
+    return ChessMoveService.getDiagnonals(start);
   }
 }

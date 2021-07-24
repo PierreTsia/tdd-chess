@@ -1,41 +1,22 @@
-import { ChessPieceSlug, Color, Coords } from './../types';
-import { IPiece } from './piece.factory';
+import {  Coords } from './../types';
+import { ChessPiece } from './chess-piece';
+import { BoardState } from './../../core/board/board.service';
+import { IPiece } from './../../core/pieces/piece.factory';
 
-const START_ROW = {
+/*const START_ROW = {
   [Color.Black]: 1,
   [Color.White]: 6,
-};
+};*/
 
-interface IPawn extends IPiece {
-  invalidRows: number[];
-  possibleOrigins(c: Coords): Coords[];
-}
+interface IPawn extends IPiece {}
 
-export class Pawn implements IPawn {
-  readonly color: Color;
-  readonly type: ChessPieceSlug = ChessPieceSlug.P;
+export class Pawn extends ChessPiece implements IPawn {
   constructor(opts: any) {
-    this.color = opts.color;
+    super(opts);
   }
 
-  get invalidRows(): number[] {
-    return this.color === Color.White ? [6, 7] : [0, 1];
-  }
-
-  getRange(start: Coords) {
-    return this.possibleOrigins(start);
-  }
-
-  possibleOrigins([row, col]: Coords): Coords[] {
-    if (this.invalidRows.includes(row)) {
-      throw new Error('Not allowed destination');
-    }
-    const count = this.isAPossibleFirstMove(row) ? [1, 2] : [1];
-    return count.map(i => [this.color === Color.White ? row + i : row - i, col]);
-  }
-
-  private isAPossibleFirstMove(row: number) {
-    const firstMoveDestinationRow = this.color === Color.White ? START_ROW[this.color] - 2 : START_ROW[this.color] + 2;
-    return row === firstMoveDestinationRow;
+  getRange(start: Coords, board: BoardState): Coords[] {
+    return [[3, 4]];
+    //return this.possibleOrigins(start);
   }
 }

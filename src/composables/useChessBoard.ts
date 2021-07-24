@@ -1,13 +1,13 @@
 import { onMounted, ref, Ref } from 'vue';
-import { ChessBoard } from '/@/core/board/board.service';
-import { Square } from '/@/core/board/square';
+import { ChessBoardService } from '/@/core/board/board.service';
+import { ChessBoardType } from '/@/core/types';
 
 export interface BoardComposition {
-  board: Ref<Square[][]>;
+  board: Ref<ChessBoardType>;
 }
 
 export function useChessBoard(): BoardComposition {
-  const boardService = new ChessBoard();
+  const boardService = new ChessBoardService();
   onMounted(() => {
     boardService.init();
     board.value = boardService.board;

@@ -1,20 +1,18 @@
-import { ChessPieceSlug, Color, Coords } from './../types';
-import { IPiece, ConditionFn } from './piece.factory';
-import { BoardHelpers } from '../board/board.helpers';
+import { Coords } from './../types';
+import { IPiece } from './piece.factory';
+import { ChessMoveService } from '../board/chessMoveService';
+import { BoardState } from './../../core/board/board.service';
+import { ChessPiece } from './chess-piece';
 
-interface IBishop extends IPiece {
+interface IBishop extends IPiece {}
 
-}
-
-export class Bishop implements IBishop {
-  readonly color: Color;
-  readonly type: ChessPieceSlug = ChessPieceSlug.B;
+export class Bishop extends ChessPiece implements IBishop {
+  moves: ChessMoveService = new ChessMoveService();
   constructor(opts: any) {
-    this.color = opts.color;
+    super(opts);
   }
 
-
-  getRange(start: Coords, conditionFn?: ConditionFn[]): Coords[] {
-    return BoardHelpers.getDiagnonals(start);
+  getRange(start: Coords, board: BoardState): Coords[] {
+    return ChessMoveService.getDiagnonals(start);
   }
 }

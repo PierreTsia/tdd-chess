@@ -1,21 +1,57 @@
 import { Square } from './square';
-import { ChessPieceSlug, Color, Coords } from './../types';
+import { ChessBoardType, ChessPieceSlug, Color, Coords } from './../types';
 import { PieceFactory as Factory } from './../../core/pieces/piece.factory';
-import { BoardHelpers } from './../../core/board/board.helpers';
+import { ChessMoveService } from './chessMoveService';
 import { UNITS, ROW_START_ORDER } from './../../core/constants';
 
+interface PiecesCoord {
+  piece: ChessPieceSlug;
+  color: Color;
+  coords: Coords;
+}
+
+export interface BoardState {
+  piecesCoords: PiecesCoord[];
+}
+
 interface IChessBoard {
-  board: any[][];
+  board: ChessBoardType;
   init(args?: any): void;
   place(piece: ChessPieceSlug, destination: Coords): void;
   move(from: Coords, destination: Coords): void;
+  reset(): void;
+  getState(): BoardState;
 }
 
-export class ChessBoard implements IChessBoard {
-  public board!: any[][];
+export class ChessBoardService implements IChessBoard {
+  public board!: ChessBoardType;
+
+  constructor() {
+    this.board = this.emptyBoard();
+  }
 
   init(args?: any) {
     this.board = UNITS.map(row => UNITS.map(col => this.populateSquare([row, col])));
+  }
+
+  reset() {
+    this.board = this.emptyBoard();
+  }
+
+  getState(): BoardState {
+    const coords = this.board.reduce((acc, row, rowIndex) => {
+      row.forEach((square, colIndex) => {
+        if (square.piece) {
+          acc.push({ piece: square.piece.type, color: square.piece.color, coords: [rowIndex, colIndex] });
+        }
+      });
+      return acc;
+    }, [] as PiecesCoord[]);
+    return { piecesCoords: coords };
+  }
+
+  private emptyBoard(): ChessBoardType {
+    return UNITS.map(row => UNITS.map(col => new Square([row, col])));
   }
 
   place(piece: ChessPieceSlug, [row, col]: Coords, color: Color = Color.White) {
@@ -23,7 +59,7 @@ export class ChessBoard implements IChessBoard {
   }
 
   move(start: Coords, dest: Coords): void {
-    if ([start, dest].some(c => BoardHelpers.isOutOfBound(c))) {
+    if ([start, dest].some(c => ChessMoveService.isOutOfBound(c))) {
       throw new Error('Out of board');
     }
 
@@ -39,9 +75,8 @@ export class ChessBoard implements IChessBoard {
     this.board[srow][scol].piece = null;
   }
 
-  private getPiece(col: number, color: Color = Color.White) {
-    const type = ROW_START_ORDER[col];
-    return new Factory[type]({ color });
+  private createPiece(type: ChessPieceSlug, color: Color = Color.White, coords: Coords) {
+    return new Factory[type]({ color, coords });
   }
 
   private populateSquare([row, col]: Coords): Square {
@@ -50,7 +85,8 @@ export class ChessBoard implements IChessBoard {
     if ([1, 6].includes(row)) {
       piece = new Factory.Pawn({ color });
     } else if ([7, 0].includes(row)) {
-      piece = this.getPiece(col, color);
+      const type = ROW_START_ORDER[col];
+      piece = this.createPiece(type, color, [row, col]);
     }
     const s = new Square([row, col]);
     s.piece = piece;

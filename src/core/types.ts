@@ -1,9 +1,13 @@
+import { Square } from './board/square';
+
 export enum Color {
   White = 'White',
   Black = 'Black',
 }
 
 export type Coords = [number, number];
+
+export type ChessBoardType = Square[][];
 
 export enum Direction {
   Up = 'Up',

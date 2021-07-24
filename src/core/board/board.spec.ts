@@ -1,4 +1,4 @@
-import { ChessBoard } from './board.service';
+import { ChessBoardService } from './board.service';
 import { Square } from './../board/square';
 import { ChessPieceSlug, Color } from './../types';
 import { King, Pawn, Queen } from './../pieces/index';
@@ -8,20 +8,33 @@ describe('|-> Chess Board', () => {
   describe('|-> Basics', () => {
     describe('|-> Setup', () => {
       it('should have a init function', () => {
-        expect(ChessBoard).toBeDefined();
-        const board = new ChessBoard();
+        expect(ChessBoardService).toBeDefined();
+        const board = new ChessBoardService();
         expect(board.init).toBeDefined();
       });
 
+      it('should have a reset function', () => {
+        const chessBoard = new ChessBoardService();
+        expect(chessBoard.reset).toBeDefined();
+        chessBoard.init();
+        chessBoard.reset();
+        UNITS.forEach(row =>
+          UNITS.forEach(col => {
+            expect(chessBoard.board[row][col]).toBeInstanceOf(Square);
+            expect(chessBoard.board[row][col].piece).toEqual(null);
+          }),
+        );
+      });
+
       it('after init a 8x8 board should be created', () => {
-        const chessBoard = new ChessBoard();
+        const chessBoard = new ChessBoardService();
         chessBoard.init();
         expect(chessBoard.board).toHaveLength(8);
         chessBoard.board.forEach(row => expect(row).toHaveLength(8));
       });
 
       it('a board should composed of 64 Squares class', () => {
-        const chessBoard = new ChessBoard();
+        const chessBoard = new ChessBoardService();
         chessBoard.init();
 
         chessBoard.board.forEach(row => {
@@ -30,7 +43,7 @@ describe('|-> Chess Board', () => {
       });
 
       it('a board should composed of black and white Squares', () => {
-        const chessBoard = new ChessBoard();
+        const chessBoard = new ChessBoardService();
         chessBoard.init();
 
         chessBoard.board.forEach(row => {
@@ -46,7 +59,7 @@ describe('|-> Chess Board', () => {
       });
 
       it('a square could have a piece or not', () => {
-        const chessBoard = new ChessBoard();
+        const chessBoard = new ChessBoardService();
         chessBoard.init();
 
         chessBoard.board.forEach(row => {
@@ -55,7 +68,7 @@ describe('|-> Chess Board', () => {
       });
 
       it('should place a row of white pawns on init', () => {
-        const chessBoard = new ChessBoard();
+        const chessBoard = new ChessBoardService();
         chessBoard.init();
         UNITS.forEach(col => {
           expect(chessBoard.board[6][col].piece).toBeInstanceOf(Pawn);
@@ -64,7 +77,7 @@ describe('|-> Chess Board', () => {
       });
 
       it('should place a row of blackPawns pawns on init', () => {
-        const chessBoard = new ChessBoard();
+        const chessBoard = new ChessBoardService();
         chessBoard.init();
         UNITS.forEach(col => {
           expect(chessBoard.board[1][col].piece).toBeInstanceOf(Pawn);
@@ -73,20 +86,24 @@ describe('|-> Chess Board', () => {
       });
 
       it('should place Kings', () => {
-        const chessBoard = new ChessBoard();
+        const chessBoard = new ChessBoardService();
         chessBoard.init();
 
-          expect(chessBoard.board[7][4].piece).toBeInstanceOf(King);
-          expect(chessBoard.board[7][4].piece.color).toEqual(Color.White);
-          expect(chessBoard.board[0][4].piece).toBeInstanceOf(King);
-          expect(chessBoard.board[1][4].piece.color).toEqual(Color.Black);
+        expect(chessBoard.board[7][4].piece).toBeInstanceOf(King);
+        expect(chessBoard.board[7][4].piece.color).toEqual(Color.White);
+        expect(chessBoard.board[0][4].piece).toBeInstanceOf(King);
+        expect(chessBoard.board[1][4].piece.color).toEqual(Color.Black);
       });
     });
 
     describe('|-> Place and Move', () => {
-      it('should have a placePiece(name, coords, color?= white) function that adds a piece on the board', () => {
-        const chessBoard = new ChessBoard();
+      let chessBoard: ChessBoardService;
+      beforeEach(() => {
+        chessBoard = new ChessBoardService();
         chessBoard.init();
+        chessBoard.reset();
+      });
+      it('should have a placePiece(name, coords, color?= white) function that adds a piece on the board', () => {
         expect(() => chessBoard.place(ChessPieceSlug.P, [6, 6])).not.toThrow();
         chessBoard.place(ChessPieceSlug.P, [6, 6]);
         expect(chessBoard.board[6][6].piece).toBeInstanceOf(Pawn);
@@ -98,8 +115,6 @@ describe('|-> Chess Board', () => {
       });
 
       it('should have a move(start:Coords, destination:Coords) that moves a piece on the board', () => {
-        const chessBoard = new ChessBoard();
-        chessBoard.init();
         chessBoard.place(ChessPieceSlug.Q, [0, 6], Color.Black);
         expect(chessBoard.board[0][6].piece).toBeInstanceOf(Queen);
         chessBoard.move([0, 6], [0, 4]);
@@ -108,8 +123,6 @@ describe('|-> Chess Board', () => {
       });
 
       it('move should throw errors when given out of board coords', () => {
-        const chessBoard = new ChessBoard();
-        chessBoard.init();
         chessBoard.place(ChessPieceSlug.Q, [0, 6], Color.Black);
 
         expect(() => chessBoard.move([-1, 6], [0, 4])).toThrow();
@@ -117,12 +130,26 @@ describe('|-> Chess Board', () => {
       });
 
       it('move should throw error when start square is empty', () => {
-        const chessBoard = new ChessBoard();
-        chessBoard.init();
         chessBoard.place(ChessPieceSlug.Q, [0, 6], Color.Black);
 
         expect(() => chessBoard.move([6, 6], [0, 4])).toThrow();
         expect(() => chessBoard.move([0, 0], [0, 8])).toThrow();
+      });
+    });
+
+    describe('|-> Board State', () => {
+      let chessBoard: ChessBoardService;
+      beforeEach(() => {
+        chessBoard = new ChessBoardService();
+        chessBoard.init();
+        chessBoard.reset();
+      });
+      it('should have an getGameState method', () => {
+        expect(chessBoard.getState).toBeDefined();
+        chessBoard.place(ChessPieceSlug.Q, [0, 6], Color.Black);
+        const state = chessBoard.getState();
+        expect(state.piecesCoords).toBeTruthy();
+        expect(state.piecesCoords).toEqual([{ piece: ChessPieceSlug.Q, color: Color.Black, coords: [0, 6] }]);
       });
     });
   });
