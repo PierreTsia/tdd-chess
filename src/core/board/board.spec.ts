@@ -104,36 +104,36 @@ describe('|-> Chess Board', () => {
         chessBoard.reset();
       });
       it('should have a placePiece(name, coords, color?= white) function that adds a piece on the board', () => {
-        expect(() => chessBoard.place(ChessPieceSlug.P, [6, 6])).not.toThrow();
-        chessBoard.place(ChessPieceSlug.P, [6, 6]);
+        expect(() => chessBoard.placePiece(ChessPieceSlug.P, [6, 6])).not.toThrow();
+        chessBoard.placePiece(ChessPieceSlug.P, [6, 6]);
         expect(chessBoard.board[6][6].piece).toBeInstanceOf(Pawn);
         expect(chessBoard.board[6][6].piece.color).toEqual(Color.White);
 
-        chessBoard.place(ChessPieceSlug.Q, [0, 6], Color.Black);
+        chessBoard.placePiece(ChessPieceSlug.Q, [0, 6], Color.Black);
         expect(chessBoard.board[0][6].piece).toBeInstanceOf(Queen);
         expect(chessBoard.board[0][6].piece.color).toEqual(Color.Black);
       });
 
       it('should have a move(start:Coords, destination:Coords) that moves a piece on the board', () => {
-        chessBoard.place(ChessPieceSlug.Q, [0, 6], Color.Black);
+        chessBoard.placePiece(ChessPieceSlug.Q, [0, 6], Color.Black);
         expect(chessBoard.board[0][6].piece).toBeInstanceOf(Queen);
-        chessBoard.move([0, 6], [0, 4]);
+        chessBoard.movePiece([0, 6], [0, 4]);
         expect(chessBoard.board[0][6].piece).toEqual(null);
         expect(chessBoard.board[0][4].piece).toBeInstanceOf(Queen);
       });
 
       it('move should throw errors when given out of board coords', () => {
-        chessBoard.place(ChessPieceSlug.Q, [0, 6], Color.Black);
+        chessBoard.placePiece(ChessPieceSlug.Q, [0, 6], Color.Black);
 
-        expect(() => chessBoard.move([-1, 6], [0, 4])).toThrow();
-        expect(() => chessBoard.move([0, 6], [0, 8])).toThrow();
+        expect(() => chessBoard.movePiece([-1, 6], [0, 4])).toThrow();
+        expect(() => chessBoard.movePiece([0, 6], [0, 8])).toThrow();
       });
 
       it('move should throw error when start square is empty', () => {
-        chessBoard.place(ChessPieceSlug.Q, [0, 6], Color.Black);
+        chessBoard.placePiece(ChessPieceSlug.Q, [0, 6], Color.Black);
 
-        expect(() => chessBoard.move([6, 6], [0, 4])).toThrow();
-        expect(() => chessBoard.move([0, 0], [0, 8])).toThrow();
+        expect(() => chessBoard.movePiece([6, 6], [0, 4])).toThrow();
+        expect(() => chessBoard.movePiece([0, 0], [0, 8])).toThrow();
       });
     });
 
@@ -146,7 +146,7 @@ describe('|-> Chess Board', () => {
       });
       it('should have an getGameState method', () => {
         expect(chessBoard.getState).toBeDefined();
-        chessBoard.place(ChessPieceSlug.Q, [0, 6], Color.Black);
+        chessBoard.placePiece(ChessPieceSlug.Q, [0, 6], Color.Black);
         const state = chessBoard.getState();
         expect(state.piecesCoords).toBeTruthy();
         expect(state.piecesCoords).toEqual([{ piece: ChessPieceSlug.Q, color: Color.Black, coords: [0, 6] }]);

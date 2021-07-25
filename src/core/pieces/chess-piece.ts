@@ -5,16 +5,20 @@ import { BoardState } from './../../core/board/board.service';
 
 export class ChessPiece implements IPiece {
   readonly color: Color;
-  readonly type!: ChessPieceSlug;
+  type!: ChessPieceSlug;
   coords: Coords;
-  moves: ChessMoveService = new ChessMoveService();
+  movesService: ChessMoveService = new ChessMoveService();
   constructor(opts: any) {
     this.color = opts.color;
     this.coords = opts.coords;
     this.type = opts.type;
   }
 
-  getRange(start: Coords, state: BoardState): Coords[] {
+  getRange(state: BoardState): Coords[] {
     return [];
+  }
+
+  move(destination: Coords) {
+    this.coords = destination;
   }
 }

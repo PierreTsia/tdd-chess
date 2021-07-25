@@ -8,25 +8,13 @@ export type ConditionFn = (args?: any) => boolean;
 export interface IPiece {
   type: ChessPieceSlug;
   color: Color;
-  moves: ChessMoveService;
+  movesService: ChessMoveService;
   coords: Coords;
-  getRange(start: Coords, state: BoardState): Coords[];
+  getRange(state: BoardState): Coords[];
+  move(destination: Coords): void;
 }
 
-export class ChessPiece implements IPiece {
-  readonly color: Color;
-  readonly type: ChessPieceSlug = ChessPieceSlug.P;
-  coords: Coords;
-  moves: ChessMoveService = new ChessMoveService();
-  constructor(opts: any) {
-    this.color = opts.color;
-    this.coords = opts.coords;
-  }
 
-  getRange(start: Coords, state: BoardState): Coords[] {
-    return [];
-  }
-}
 
 interface IChessPiecesClasses {
   Pawn: Pawn;

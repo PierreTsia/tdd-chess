@@ -17,8 +17,8 @@ export interface BoardState {
 interface IChessBoard {
   board: ChessBoardType;
   init(args?: any): void;
-  place(piece: ChessPieceSlug, destination: Coords): void;
-  move(from: Coords, destination: Coords): void;
+  placePiece(piece: ChessPieceSlug, destination: Coords, color?: Color): void;
+  movePiece(from: Coords, destination: Coords): void;
   reset(): void;
   getState(): BoardState;
 }
@@ -54,11 +54,11 @@ export class ChessBoardService implements IChessBoard {
     return UNITS.map(row => UNITS.map(col => new Square([row, col])));
   }
 
-  place(piece: ChessPieceSlug, [row, col]: Coords, color: Color = Color.White) {
-    this.board[row][col].piece = new Factory[piece]({ color });
+  placePiece(piece: ChessPieceSlug, [row, col]: Coords, color: Color = Color.White) {
+    this.board[row][col].piece = new Factory[piece]({ color, coords: [row, col] });
   }
 
-  move(start: Coords, dest: Coords): void {
+  movePiece(start: Coords, dest: Coords): void {
     if ([start, dest].some(c => ChessMoveService.isOutOfBound(c))) {
       throw new Error('Out of board');
     }
@@ -70,6 +70,7 @@ export class ChessBoardService implements IChessBoard {
     if (!movingPiece) {
       throw new Error('Square is empty');
     }
+    movingPiece.move([destRow, destCol]);
 
     this.board[destRow][destCol].piece = movingPiece;
     this.board[srow][scol].piece = null;

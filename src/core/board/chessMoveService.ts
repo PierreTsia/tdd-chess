@@ -1,9 +1,8 @@
-import { Coords, Direction, Diagonal } from '../types';
+import { Color, Coords, Diagonal, Direction } from '../types';
 import { BoardState, ChessBoardService } from './../../core/board/board.service';
 
-
 export class ChessMoveService {
-  private chessBoard: ChessBoardService
+  private chessBoard: ChessBoardService;
   constructor(boardState?: BoardState) {
     this.chessBoard = new ChessBoardService();
     if (boardState) {
@@ -11,9 +10,17 @@ export class ChessMoveService {
     }
   }
 
-  private populate(boardState: BoardState) {
+  isEmptySquare([row, col]: Coords): boolean {
+    return !this.chessBoard.board[row][col].piece;
+  }
+
+  hasOpponent([row, col]: Coords, color: Color): boolean {
+    return !this.isEmptySquare([row, col]) && this.chessBoard.board[row][col].piece.color !== color;
+  }
+
+  populate(boardState: BoardState) {
     boardState.piecesCoords.forEach(({ piece, coords, color }) => {
-      this.chessBoard.place(piece, coords, color);
+      this.chessBoard.placePiece(piece, coords, color);
     });
   }
 
@@ -21,87 +28,55 @@ export class ChessMoveService {
     return coords.some(c => c < 0 || c > 7);
   }
 
-  static getDiagnonals(start: Coords) {
-    return [...ChessMoveService.diagonalDownLeftUpRight(start), ...ChessMoveService.diagonalDownRightUpLeft(start)];
+  moveUpOrDown(coords: Coords, limit: number, direction: Direction.Up | Direction.Down): Coords[] {
+    return this.getNextUntilLimit((c: Coords) => this.getVertical(c, direction), coords, limit, []); //th
   }
 
-  static diagonalDownRightUpLeft(start: Coords): Coords[] {
-    const upLeft = ChessMoveService.getNextUntilEnd((c: Coords) => ChessMoveService.moveUpLeft(c), start);
-    const downRight = ChessMoveService.getNextUntilEnd(
-      (c: Coords) => ChessMoveService.moveDownRight(c),
-      start,
-    ).reverse();
-
-    return [...downRight, ...upLeft];
+  moveDiagonal(
+    coords: Coords,
+    limit: number,
+    directions: [Direction.Up | Direction.Down, Direction.Left | Direction.Right][],
+  ): Coords[] {
+    return directions.reduce((acc, [upOrDown, rightOfLeft]) => {
+      acc.push(
+        ...this.getNextUntilLimit((c: Coords) => this.getDiagonal(c, [upOrDown, rightOfLeft]), coords, limit, []),
+      );
+      return acc;
+    }, [] as Coords[]);
   }
 
-  static diagonalDownLeftUpRight(start: Coords): Coords[] {
-    const upRight = ChessMoveService.getNextUntilEnd((c: Coords) => ChessMoveService.moveUpRight(c), start);
-    const downLeft = ChessMoveService.getNextUntilEnd((c: Coords) => ChessMoveService.moveDownLeft(c), start).reverse();
-    return [...downLeft, ...upRight];
+  getDiagonal(coords: Coords, [vertical, horizontal]: Diagonal): Coords {
+    const horModifier: [number, number] = horizontal === Direction.Left ? [0, -1] : [0, 1];
+    const verModifier: [number, number] = vertical === Direction.Up ? [-1, 0] : [1, 0];
+    const modifier: [number, number] = this.mergeCoords(horModifier, verModifier);
+    return this.mergeCoords(coords, modifier);
   }
 
-  static moveUp(coords: Coords): Coords {
-    return ChessMoveService.moveVertical(coords, Direction.Up);
-  }
-
-  static moveDown(coords: Coords): Coords {
-    return ChessMoveService.moveVertical(coords, Direction.Down);
-  }
-
-  static moveLeft(coords: Coords): Coords {
-    return ChessMoveService.moveHorizontal(coords, Direction.Left);
-  }
-
-  static moveRight(coords: Coords): Coords {
-    return ChessMoveService.moveHorizontal(coords, Direction.Right);
-  }
-
-  static moveUpRight(coords: Coords): Coords {
-    return ChessMoveService.moveDiagonal(coords, [Direction.Up, Direction.Right]);
-  }
-  static moveUpLeft(coords: Coords): Coords {
-    return ChessMoveService.moveDiagonal(coords, [Direction.Up, Direction.Left]);
-  }
-
-  static moveDownRight(coords: Coords): Coords {
-    return ChessMoveService.moveDiagonal(coords, [Direction.Down, Direction.Right]);
-  }
-
-  static moveDownLeft(coords: Coords): Coords {
-    return ChessMoveService.moveDiagonal(coords, [Direction.Down, Direction.Left]);
-  }
-
-  static moveVertical(coords: Coords, direction: Direction.Down | Direction.Up): Coords {
+  getVertical(coords: Coords, direction: Direction.Down | Direction.Up): Coords {
     const modifier: [number, number] = direction === Direction.Up ? [-1, 0] : [1, 0];
-    return ChessMoveService.mergeCoords(coords, modifier);
+    return this.mergeCoords(coords, modifier);
   }
 
-  static mergeCoords(coords: Coords | [number, number], modifier: [number, number]) {
+  getHorizontal(coords: Coords, direction: Direction.Left | Direction.Right): Coords {
+    const modifier: [number, number] = direction === Direction.Left ? [0, -1] : [0, 1];
+    return this.mergeCoords(coords, modifier);
+  }
+
+  getNextUntilLimit(moveFn: (s: Coords) => Coords, start: Coords, limit: number, acc: Coords[] = []): Coords[] {
+    const next = moveFn(start);
+    if (ChessMoveService.isOutOfBound(next) || limit === 0) {
+      return acc;
+    } else {
+      limit--;
+      acc.push(next);
+      return this.getNextUntilLimit(moveFn, next, limit, acc);
+    }
+  }
+
+  mergeCoords(coords: Coords | [number, number], modifier: [number, number]) {
     return coords.reduce((newCoords, colOrRow: number, i: number) => {
       newCoords.push((colOrRow += modifier[i]));
       return newCoords;
     }, [] as any);
-  }
-
-  static moveDiagonal(coords: Coords, [vertical, horizontal]: Diagonal): Coords {
-    const horModifier: [number, number] = horizontal === Direction.Left ? [0, -1] : [0, 1];
-    const verModifier: [number, number] = vertical === Direction.Up ? [-1, 0] : [1, 0];
-    const modifier: [number, number] = ChessMoveService.mergeCoords(horModifier, verModifier);
-    return ChessMoveService.mergeCoords(coords, modifier);
-  }
-
-  static moveHorizontal(coords: Coords, direction: Direction.Left | Direction.Right): Coords {
-    const modifier: [number, number] = direction === Direction.Left ? [0, -1] : [0, 1];
-    return ChessMoveService.mergeCoords(coords, modifier);
-  }
-
-  static getNextUntilEnd(moveFn: (s: Coords) => Coords, start: Coords, acc: Coords[] = []): Coords[] {
-    const next = moveFn(start);
-    if (ChessMoveService.isOutOfBound(next)) {
-      return acc;
-    }
-    acc.push(next);
-    return ChessMoveService.getNextUntilEnd(moveFn, next, acc);
   }
 }
