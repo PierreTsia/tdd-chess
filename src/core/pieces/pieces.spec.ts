@@ -33,8 +33,8 @@ describe('|-> Chess Pieces', () => {
                 [5, 7],
               ];
 
-        expect(pawn.getRange(state)).toEqual([expectedCoords[0]]);
-        expect(pawn2.getRange(state)).toEqual([expectedCoords[1]]);
+        expect(pawn!.getRange(state)).toEqual([expectedCoords[0]]);
+        expect(pawn2!.getRange(state)).toEqual([expectedCoords[1]]);
       });
 
       it('a pawn can move 2 squares if it has not moved yet', () => {
@@ -43,11 +43,11 @@ describe('|-> Chess Pieces', () => {
         const whitePawn = chessBoard.board[6][4].piece;
         const blackPawn = chessBoard.board[1][4].piece;
         const state = chessBoard.getState();
-        expect(whitePawn.getRange(state)).toEqual([
+        expect(whitePawn!.getRange(state)).toEqual([
           [5, 4],
           [4, 4],
         ]);
-        expect(blackPawn.getRange(state)).toEqual([
+        expect(blackPawn!.getRange(state)).toEqual([
           [2, 4],
           [3, 4],
         ]);
@@ -61,8 +61,8 @@ describe('|-> Chess Pieces', () => {
         const threateningWhitePawn = chessBoard.board[6][4].piece;
         const aloneWhitePawn = chessBoard.board[4][0].piece;
         const state = chessBoard.getState();
-        expect(aloneWhitePawn.getRange(state)).toEqual([[3, 0]]);
-        expect(threateningWhitePawn.getRange(state)).toEqual([
+        expect(aloneWhitePawn!.getRange(state)).toEqual([[3, 0]]);
+        expect(threateningWhitePawn!.getRange(state)).toEqual([
           [5, 4],
           [4, 4],
           [5, 3],
@@ -79,12 +79,12 @@ describe('|-> Chess Pieces', () => {
         const threateningBlackPawn1 = chessBoard.board[5][4].piece;
         const threateningBlackPawn2 = chessBoard.board[4][0].piece;
         const state = chessBoard.getState();
-        expect(threateningBlackPawn1.getRange(state)).toEqual([
+        expect(threateningBlackPawn1!.getRange(state)).toEqual([
           [6, 4],
           [6, 3],
           [6, 5],
         ]);
-        expect(threateningBlackPawn2.getRange(state)).toEqual([
+        expect(threateningBlackPawn2!.getRange(state)).toEqual([
           [5, 0],
           [5, 1],
         ]);
@@ -95,7 +95,7 @@ describe('|-> Chess Pieces', () => {
         chessBoard.placePiece(ChessPieceSlug.P, [2, 4], Color.Black);
         const blockedPawn = chessBoard.board[3][4].piece;
         const state = chessBoard.getState();
-        expect(blockedPawn.getRange(state)).toEqual([]);
+        expect(blockedPawn!.getRange(state)).toEqual([]);
       });
     });
     describe('|-> Knight', () => {
@@ -122,7 +122,7 @@ describe('|-> Chess Pieces', () => {
         const knight = chessBoard.board[4][4].piece;
 
         const state = chessBoard.getState();
-        expect(knight.getRange(state).sort()).toEqual(expectedKnightDestination.sort());
+        expect(knight!.getRange(state).sort()).toEqual(expectedKnightDestination.sort());
       });
 
       it('a knight cannot landing on a square occupied by ally', () => {
@@ -141,7 +141,7 @@ describe('|-> Chess Pieces', () => {
 
         const knight = chessBoard.board[4][4].piece;
         const state = chessBoard.getState();
-        expect(knight.getRange(state).sort()).toEqual(expectedKnightDestination.sort());
+        expect(knight!.getRange(state).sort()).toEqual(expectedKnightDestination.sort());
       });
     });
   });

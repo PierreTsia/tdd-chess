@@ -72,7 +72,7 @@ describe('|-> Chess Board', () => {
         chessBoard.init();
         UNITS.forEach(col => {
           expect(chessBoard.board[6][col].piece).toBeInstanceOf(Pawn);
-          expect(chessBoard.board[6][col].piece.color).toEqual(Color.White);
+          expect(chessBoard.board[6][col].piece!.color).toEqual(Color.White);
         });
       });
 
@@ -81,7 +81,7 @@ describe('|-> Chess Board', () => {
         chessBoard.init();
         UNITS.forEach(col => {
           expect(chessBoard.board[1][col].piece).toBeInstanceOf(Pawn);
-          expect(chessBoard.board[1][col].piece.color).toEqual(Color.Black);
+          expect(chessBoard.board[1][col].piece!.color).toEqual(Color.Black);
         });
       });
 
@@ -90,9 +90,9 @@ describe('|-> Chess Board', () => {
         chessBoard.init();
 
         expect(chessBoard.board[7][4].piece).toBeInstanceOf(King);
-        expect(chessBoard.board[7][4].piece.color).toEqual(Color.White);
+        expect(chessBoard.board[7][4].piece!.color).toEqual(Color.White);
         expect(chessBoard.board[0][4].piece).toBeInstanceOf(King);
-        expect(chessBoard.board[1][4].piece.color).toEqual(Color.Black);
+        expect(chessBoard.board[1][4].piece!.color).toEqual(Color.Black);
       });
     });
 
@@ -107,11 +107,11 @@ describe('|-> Chess Board', () => {
         expect(() => chessBoard.placePiece(ChessPieceSlug.P, [6, 6])).not.toThrow();
         chessBoard.placePiece(ChessPieceSlug.P, [6, 6]);
         expect(chessBoard.board[6][6].piece).toBeInstanceOf(Pawn);
-        expect(chessBoard.board[6][6].piece.color).toEqual(Color.White);
+        expect(chessBoard.board[6][6].piece!.color).toEqual(Color.White);
 
         chessBoard.placePiece(ChessPieceSlug.Q, [0, 6], Color.Black);
         expect(chessBoard.board[0][6].piece).toBeInstanceOf(Queen);
-        expect(chessBoard.board[0][6].piece.color).toEqual(Color.Black);
+        expect(chessBoard.board[0][6].piece!.color).toEqual(Color.Black);
       });
 
       it('should have a move(start:Coords, destination:Coords) that moves a piece on the board', () => {

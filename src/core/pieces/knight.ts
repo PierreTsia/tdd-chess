@@ -16,8 +16,6 @@ export class Knight extends ChessPiece implements IKnight {
 
   getRange(state: BoardState): Coords[] {
     this.movesService.populate(state);
-    return this.movesService
-      .knightMoves(this.coords)
-      .filter(c => this.movesService.isEmptySquare(c) || !this.movesService.hasAlly(c, this.color));
+    return this.movesService.knightMoves(this.coords, this.color);
   }
 }

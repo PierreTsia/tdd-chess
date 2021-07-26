@@ -48,10 +48,11 @@ export class ChessMoveService {
     return this.getNextUntilLimit((c: Coords) => this.getVertical(c, direction), coords, limit, []); //th
   }
 
-  knightMoves(start: Coords): Coords[] {
+  knightMoves(start: Coords, color:Color): Coords[] {
     return this.knightModifiers
       .map(modifiers => this.mergeCoords(start, modifiers))
-      .filter(c => !ChessMoveService.isOutOfBound(c));
+      .filter(c => !ChessMoveService.isOutOfBound(c))
+      .filter(c => this.isEmptySquare(c) || !this.hasAlly(c, color));
   }
 
   moveDiagonal(
