@@ -9,6 +9,7 @@
 import { computed, defineComponent } from 'vue';
 import { Color } from '/@/core/types';
 import * as pieces from '/@/ui/pieces/index';
+import { Square as SquareClass } from '/@/core/board/square';
 
 export default defineComponent({
   name: 'Square',
@@ -16,9 +17,10 @@ export default defineComponent({
   props: {
     square: {
       required: true,
+      default: () => ({} as SquareClass),
     },
   },
-  setup(props: { square: any }) {
+  setup(props: { square: SquareClass }) {
     const pieceComponent = computed(() => {
       if (!props.square.piece) {
         return null;

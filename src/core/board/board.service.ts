@@ -84,7 +84,7 @@ export class ChessBoardService implements IChessBoard {
     let piece: any = null;
     const color = row <= 1 ? Color.Black : Color.White;
     if ([1, 6].includes(row)) {
-      piece = new Factory.Pawn({ color });
+      piece = new Factory.Pawn({ color, coords: [row, col] });
     } else if ([7, 0].includes(row)) {
       const type = ROW_START_ORDER[col];
       piece = this.createPiece(type, color, [row, col]);

@@ -1,8 +1,9 @@
 import { Color, Coords } from './../types';
+import { IPiece } from './../../core/pieces/piece.factory';
 
 export class Square {
   readonly color!: Color;
-  piece: any | null = null;
+  piece: IPiece | null = null;
   constructor([row, col]: Coords) {
     this.color = this.assignColor(row, col);
   }

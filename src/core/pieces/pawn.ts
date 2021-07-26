@@ -11,6 +11,7 @@ export class Pawn extends ChessPiece implements IPawn {
   constructor(opts: any) {
     super(opts);
     this.type = ChessPieceSlug.P;
+    this.coords = opts.coords;
   }
 
   getRange(board: BoardState): Coords[] {
