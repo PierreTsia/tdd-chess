@@ -5,19 +5,60 @@
       <p class="leading-normal text-sm text-center w-full text-gray-800 dark:text-gray-200">Work in progress... ♟♟♟</p>
     </div>
     <div class="container p-0 h-auto flex flex-col justify-center align center h-full">
-      <ChessBoard />
+      <div class="container p-2 flex justify-center align center">
+        <div class="inline-block mr-2 mt-2">
+          <button type="button" class="btn bg-purple-500 min-w-20 hover:bg-purple-600" @click="resetBoard">
+            RESET BOARD
+          </button>
+        </div>
+
+        <div class="inline-block mr-2 mt-2">
+          <button type="button" class="btn bg-green-500 hover:bg-green-600 min-w-20" @click="initBoard">
+            START GAME
+          </button>
+        </div>
+      </div>
+      <ChessBoard :board="board" :highlighted-squares="highlightedSquares" @on-piece-click="highlightInRangeSquares" />
+
+      <div class="container p-2 flex justify-center align center">
+        <div class="inline-block mr-2 mt-2">
+          <button type="button" class="btn bg-purple-500 min-w-20 hover:bg-purple-600" @click="resetBoard">
+            RESET BOARD
+          </button>
+        </div>
+
+        <div class="inline-block mr-2 mt-2">
+          <button type="button" class="btn bg-green-500 hover:bg-green-600 min-w-20" @click="initBoard">
+            START GAME
+          </button>
+        </div>
+      </div>
       <Footer class="d-block mt-auto" />
     </div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, Ref } from 'vue';
 import ChessBoard from '/@/components/ChessBoard.vue';
 import Footer from '/@/components/Footer.vue';
+import { useChessBoard } from '/@/composables';
+import { Square as SquareClass } from '/@/core/board/square';
+import { IPiece } from '/@/core/pieces/piece.factory';
 
 export default defineComponent({
   name: 'Home',
   components: { Footer, ChessBoard },
+  setup() {
+    const { board, resetBoard, initBoard, showSquaresInRange } = useChessBoard();
+    const highlightedSquares: Ref<SquareClass[]> = ref([]);
+    const highlightInRangeSquares = (piece: IPiece) => {
+      const squares = showSquaresInRange(piece);
+      console.log('===>', squares);
+      highlightedSquares.value = squares;
+    };
+
+    return { board, resetBoard, initBoard, highlightedSquares, highlightInRangeSquares };
+  },
 });
 </script>
 <style scoped>

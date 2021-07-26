@@ -1,8 +1,20 @@
 import { Color, Coords, Diagonal, Direction } from '../types';
 import { BoardState, ChessBoardService } from './../../core/board/board.service';
 
+type KnightModifiers = [1 | 2 | -1 | -2, 1 | 2 | -1 | -2][];
+
 export class ChessMoveService {
   private chessBoard: ChessBoardService;
+  private readonly knightModifiers: KnightModifiers = [
+    [-1, -2],
+    [-1, 2],
+    [1, -2],
+    [1, 2],
+    [-2, 1],
+    [-2, -1],
+    [2, -1],
+    [2, 1],
+  ];
   constructor(boardState?: BoardState) {
     this.chessBoard = new ChessBoardService();
     if (boardState) {
@@ -15,7 +27,11 @@ export class ChessMoveService {
   }
 
   hasOpponent([row, col]: Coords, color: Color): boolean {
-    return !this.isEmptySquare([row, col]) && this.chessBoard.board[row][col].piece.color !== color;
+    return !this.isEmptySquare([row, col]) && this.chessBoard.board[row][col].piece!.color !== color;
+  }
+
+  hasAlly([row, col]: Coords, color: Color): boolean {
+    return !this.isEmptySquare([row, col]) && this.chessBoard.board[row][col].piece!.color === color;
   }
 
   populate(boardState: BoardState) {
@@ -30,6 +46,12 @@ export class ChessMoveService {
 
   moveUpOrDown(coords: Coords, limit: number, direction: Direction.Up | Direction.Down): Coords[] {
     return this.getNextUntilLimit((c: Coords) => this.getVertical(c, direction), coords, limit, []); //th
+  }
+
+  knightMoves(start: Coords): Coords[] {
+    return this.knightModifiers
+      .map(modifiers => this.mergeCoords(start, modifiers))
+      .filter(c => !ChessMoveService.isOutOfBound(c));
   }
 
   moveDiagonal(

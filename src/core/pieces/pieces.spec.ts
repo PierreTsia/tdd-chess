@@ -98,5 +98,51 @@ describe('|-> Chess Pieces', () => {
         expect(blockedPawn.getRange(state)).toEqual([]);
       });
     });
+    describe('|-> Knight', () => {
+      let chessBoard: ChessBoardService;
+      beforeEach(() => {
+        chessBoard = new ChessBoardService();
+        chessBoard.init();
+        chessBoard.reset();
+      });
+
+      it('a knight moves in a L shape', () => {
+        chessBoard.placePiece(ChessPieceSlug.N, [4, 4], Color.White);
+        const expectedKnightDestination = [
+          [2, 3],
+          [2, 5],
+          [3, 6],
+          [5, 6],
+          [6, 5],
+          [6, 3],
+          [5, 2],
+          [3, 2],
+        ];
+
+        const knight = chessBoard.board[4][4].piece;
+
+        const state = chessBoard.getState();
+        expect(knight.getRange(state).sort()).toEqual(expectedKnightDestination.sort());
+      });
+
+      it('a knight cannot landing on a square occupied by ally', () => {
+        chessBoard.placePiece(ChessPieceSlug.N, [4, 4], Color.White);
+        chessBoard.placePiece(ChessPieceSlug.P, [2, 3], Color.White);
+        chessBoard.placePiece(ChessPieceSlug.N, [5, 2], Color.Black);
+        const expectedKnightDestination = [
+          [2, 5],
+          [3, 6],
+          [5, 6],
+          [6, 5],
+          [6, 3],
+          [5, 2],
+          [3, 2],
+        ];
+
+        const knight = chessBoard.board[4][4].piece;
+        const state = chessBoard.getState();
+        expect(knight.getRange(state).sort()).toEqual(expectedKnightDestination.sort());
+      });
+    });
   });
 });
