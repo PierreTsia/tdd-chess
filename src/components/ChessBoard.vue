@@ -28,7 +28,7 @@ export default defineComponent({
       default: null,
     },
   },
-  setup(props: { board: ChessBoardType; activeCoords?: Coords | null }, { emit }) {
+  setup(props: { board: ChessBoardType; activeCoords: Coords | null }, { emit }) {
     const handleClick = (square: SquareClass) => {
       emit('on-square-click', square);
     };

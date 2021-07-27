@@ -44,7 +44,7 @@ export default defineComponent({
     const highlightedSquares: Ref<Coords[]> = ref([]);
     const activePiece: Ref<IPiece | null> = ref(null);
 
-    const activeCoords: ComputedRef<Coords | null> = computed(() => {
+    const activeCoords: ComputedRef = computed(() => {
       return activePiece.value?.coords ?? null;
     });
 
