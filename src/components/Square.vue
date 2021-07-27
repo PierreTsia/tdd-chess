@@ -1,5 +1,5 @@
 <template>
-  <div :class="[`col-span-1`, `${bgColor}`]">
+  <div :class="[`col-span-1`, `${bgColor}`, `${square.piece ? 'cursor-pointer' : 'cursor: default'}`]">
     <div v-if="square.piece" class="d-block h-full h-full w-full relative">
       <component :is="pieceComponent" class="absolute bottom-2 left-1 md:bottom-3 md:left-3 w-3/4 h-3/4" />
     </div>

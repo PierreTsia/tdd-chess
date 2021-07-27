@@ -14,6 +14,7 @@ export class Bishop extends ChessPiece implements IBishop {
   }
 
   getRange(board: BoardState): Coords[] {
+    this.movesService.populate(board);
     return [];
   }
 }

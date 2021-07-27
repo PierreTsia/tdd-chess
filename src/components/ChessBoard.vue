@@ -30,15 +30,11 @@ export default defineComponent({
     },
   },
   setup(props: { board: any; highlightedSquares: any }, { emit }) {
-
     const handleClick = (square: SquareClass) => {
-      console.log(square);
-      if (square.piece) {
-        emit('on-piece-click', square.piece);
-      }
+      emit('on-piece-click', square.piece);
     };
 
-    return {  handleClick };
+    return { handleClick };
   },
 });
 </script>

@@ -23,6 +23,7 @@ export class ChessMoveService {
   }
 
   isEmptySquare([row, col]: Coords): boolean {
+    debugger;
     return !this.chessBoard.board[row][col].piece;
   }
 
@@ -31,7 +32,9 @@ export class ChessMoveService {
   }
 
   hasAlly([row, col]: Coords, color: Color): boolean {
-    return !this.isEmptySquare([row, col]) && this.chessBoard.board[row][col].piece!.color === color;
+    const t = !this.isEmptySquare([row, col]) && this.chessBoard.board[row][col].piece!.color === color;
+    debugger;
+    return t;
   }
 
   populate(boardState: BoardState) {
@@ -48,7 +51,7 @@ export class ChessMoveService {
     return this.getNextUntilLimit((c: Coords) => this.getVertical(c, direction), coords, limit, []); //th
   }
 
-  knightMoves(start: Coords, color:Color): Coords[] {
+  knightMoves(start: Coords, color: Color): Coords[] {
     return this.knightModifiers
       .map(modifiers => this.mergeCoords(start, modifiers))
       .filter(c => !ChessMoveService.isOutOfBound(c))
@@ -66,6 +69,43 @@ export class ChessMoveService {
       );
       return acc;
     }, [] as Coords[]);
+  }
+
+  moveHorizontally(coords: Coords, color: Color): Coords[] {
+    const directions: [Direction.Left, Direction.Right] = [Direction.Left, Direction.Right];
+    return directions.reduce((acc, direction) => {
+      acc.push(
+        ...this.getNextUntilConditions(
+          (c: Coords) => this.getHorizontal(c, direction),
+          coords,
+          color,
+          (c: Coords, color: Color) => this.isNotAllySquare(c, color),
+          [],
+        ),
+      );
+      return acc;
+    }, [] as Coords[]);
+  }
+
+  moveVertically(coords: Coords, color: Color): Coords[] {
+    const directions: [Direction.Up, Direction.Down] = [Direction.Up, Direction.Down];
+    return directions.reduce((acc, direction) => {
+      acc.push(
+        ...this.getNextUntilConditions(
+          (c: Coords) => this.getVertical(c, direction),
+          coords,
+          color,
+          (c: Coords, color: Color) => this.isNotAllySquare(c, color),
+
+          [],
+        ),
+      );
+      return acc;
+    }, [] as Coords[]);
+  }
+
+  private isNotAllySquare(coords: Coords, color: Color): boolean {
+    return this.isEmptySquare(coords) || !this.hasAlly(coords, color);
   }
 
   getDiagonal(coords: Coords, [vertical, horizontal]: Diagonal): Coords {
@@ -93,6 +133,24 @@ export class ChessMoveService {
       limit--;
       acc.push(next);
       return this.getNextUntilLimit(moveFn, next, limit, acc);
+    }
+  }
+
+  getNextUntilConditions(
+    moveFn: (s: Coords) => Coords,
+    start: Coords,
+    color: Color,
+    conditionFn: (c: Coords, color: Color) => boolean = () => true,
+    acc: Coords[] = [],
+  ): Coords[] {
+    const next = moveFn(start);
+
+    if (ChessMoveService.isOutOfBound(next) || !conditionFn(next, color)) {
+      debugger;
+      return acc;
+    } else {
+      acc.push(next);
+      return this.getNextUntilConditions(moveFn, next, color, conditionFn, acc);
     }
   }
 

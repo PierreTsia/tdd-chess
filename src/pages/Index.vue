@@ -51,10 +51,12 @@ export default defineComponent({
   setup() {
     const { board, resetBoard, initBoard, showSquaresInRange } = useChessBoard();
     const highlightedSquares: Ref<SquareClass[]> = ref([]);
-    const highlightInRangeSquares = (piece: IPiece) => {
-      const squares = showSquaresInRange(piece);
-      console.log('===>', squares);
-      highlightedSquares.value = squares;
+    const highlightInRangeSquares = (piece: IPiece | null) => {
+      if (!piece) {
+        highlightedSquares.value = [];
+      } else {
+        highlightedSquares.value = showSquaresInRange(piece);
+      }
     };
 
     return { board, resetBoard, initBoard, highlightedSquares, highlightInRangeSquares };
