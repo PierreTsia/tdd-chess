@@ -3,14 +3,13 @@ import { ChessBoardService } from './../../core/board/board.service';
 
 describe('|-> Chess Pieces', () => {
   describe('|-> Moves', () => {
+    let chessBoard: ChessBoardService;
+    beforeEach(() => {
+      chessBoard = new ChessBoardService();
+      chessBoard.init();
+      chessBoard.reset();
+    });
     describe('|-> Pawn', () => {
-      let chessBoard: ChessBoardService;
-      beforeEach(() => {
-        chessBoard = new ChessBoardService();
-        chessBoard.init();
-        chessBoard.reset();
-      });
-
       const colorsCases: [Color, string][] = [
         [Color.White, 'up'],
         [Color.Black, 'down'],
@@ -99,13 +98,6 @@ describe('|-> Chess Pieces', () => {
       });
     });
     describe('|-> Knight', () => {
-      let chessBoard: ChessBoardService;
-      beforeEach(() => {
-        chessBoard = new ChessBoardService();
-        chessBoard.init();
-        chessBoard.reset();
-      });
-
       it('a knight moves in a L shape', () => {
         chessBoard.placePiece(ChessPieceSlug.N, [4, 4], Color.White);
         const expectedKnightDestination = [
@@ -124,7 +116,6 @@ describe('|-> Chess Pieces', () => {
         const state = chessBoard.getState();
         expect(knight!.getRange(state).sort()).toEqual(expectedKnightDestination.sort());
       });
-
       it('a knight cannot land on a square occupied by ally', () => {
         chessBoard.placePiece(ChessPieceSlug.N, [4, 4], Color.White);
         chessBoard.placePiece(ChessPieceSlug.P, [2, 3], Color.White);
@@ -145,13 +136,6 @@ describe('|-> Chess Pieces', () => {
       });
     });
     describe('|-> Rook', () => {
-      let chessBoard: ChessBoardService;
-      beforeEach(() => {
-        chessBoard = new ChessBoardService();
-        chessBoard.init();
-        chessBoard.reset();
-      });
-
       it('a rook moves in line and column', () => {
         chessBoard.placePiece(ChessPieceSlug.R, [4, 4], Color.White);
         chessBoard.placePiece(ChessPieceSlug.R, [0, 0], Color.Black);
@@ -220,6 +204,111 @@ describe('|-> Chess Pieces', () => {
             [4, 5],
             [4, 6],
             [4, 7],
+          ].sort(),
+        );
+      });
+    });
+    describe('|-> Bishop', () => {
+      it('a bishop should move in diagonal', () => {
+        //alone bishop
+        chessBoard.placePiece(ChessPieceSlug.B, [4, 4], Color.White);
+        // black bishop
+        chessBoard.placePiece(ChessPieceSlug.B, [4, 1], Color.Black);
+        // opponent pawn
+        chessBoard.placePiece(ChessPieceSlug.P, [5, 0], Color.White);
+        // ally blocking pawn
+        chessBoard.placePiece(ChessPieceSlug.P, [3, 2], Color.Black);
+
+        const state = chessBoard.getState();
+        const whiteBishop = chessBoard.board[4][4].piece;
+        expect(whiteBishop!.getRange(state).sort()).toEqual(
+          [
+            [7, 1],
+            [6, 2],
+            [5, 3],
+            [3, 5],
+            [2, 6],
+            [1, 7],
+
+            [7, 7],
+            [6, 6],
+            [5, 5],
+            [3, 3],
+            [2, 2],
+            [1, 1],
+            [0, 0],
+          ].sort(),
+        );
+
+        const blackBishop = chessBoard.board[4][1].piece;
+
+        expect(blackBishop!.getRange(state).sort()).toEqual(
+          [
+            [5, 0],
+            [3, 0],
+            [5, 2],
+            [6, 3],
+            [7, 4],
+          ].sort(),
+        );
+      });
+    });
+    describe('|-> Queen', () => {
+      it('a queen can move vertically, horizontally and diagonally', () => {
+        //alone Queen
+        chessBoard.placePiece(ChessPieceSlug.Q, [4, 4], Color.White);
+
+        const whiteQueen = chessBoard.board[4][4].piece;
+        const state = chessBoard.getState();
+        expect(whiteQueen!.getRange(state).sort()).toEqual(
+          [
+            [0, 4],
+            [1, 4],
+            [2, 4],
+            [3, 4],
+            [5, 4],
+            [6, 4],
+            [7, 4],
+            [4, 3],
+            [4, 2],
+            [4, 1],
+            [4, 0],
+            [4, 5],
+            [4, 6],
+            [4, 7],
+            [7, 1],
+            [6, 2],
+            [5, 3],
+            [3, 5],
+            [2, 6],
+            [1, 7],
+            [7, 7],
+            [6, 6],
+            [5, 5],
+            [3, 3],
+            [2, 2],
+            [1, 1],
+            [0, 0],
+          ].sort(),
+        );
+      });
+    });
+    describe('|-> King', () => {
+      it('a king can go in any direction but only one square away', () => {
+        //alone King
+        chessBoard.placePiece(ChessPieceSlug.K, [4, 4], Color.White);
+        const state = chessBoard.getState();
+        const whiteKing = chessBoard.board[4][4].piece;
+        expect(whiteKing!.getRange(state).sort()).toEqual(
+          [
+            [3, 3],
+            [3, 4],
+            [3, 5],
+            [4, 3],
+            [4, 5],
+            [5, 3],
+            [5, 4],
+            [5, 5],
           ].sort(),
         );
       });

@@ -8,6 +8,7 @@ interface IBishop extends IPiece {}
 
 export class Bishop extends ChessPiece implements IBishop {
   movesService: ChessMoveService = new ChessMoveService();
+
   constructor(opts: any) {
     super(opts);
     this.type = ChessPieceSlug.B;
@@ -15,6 +16,6 @@ export class Bishop extends ChessPiece implements IBishop {
 
   getRange(board: BoardState): Coords[] {
     this.movesService.populate(board);
-    return [];
+    return [...this.movesService.moveDiagonally(this.coords, this.color)];
   }
 }

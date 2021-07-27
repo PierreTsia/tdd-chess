@@ -16,7 +16,9 @@ export enum Direction {
   Right = 'Right',
 }
 
-export type Diagonal = [Direction.Up | Direction.Down, Direction.Left | Direction.Right];
+export type Diagonal = [Vertical, Horizontal];
+export type Horizontal = Direction.Left | Direction.Right;
+export type Vertical = Direction.Up | Direction.Down;
 
 export enum ChessPieceSlug {
   P = 'Pawn',

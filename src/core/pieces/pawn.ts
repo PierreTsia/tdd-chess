@@ -1,4 +1,4 @@
-import { ChessPieceSlug, Color, Coords, Direction } from './../types';
+import { ChessPieceSlug, Color, Coords, Diagonal, Direction } from './../types';
 import { ChessPiece } from './chess-piece';
 import { BoardState } from './../../core/board/board.service';
 import { IPiece } from './../../core/pieces/piece.factory';
@@ -8,6 +8,14 @@ interface IPawn extends IPiece {
 }
 
 export class Pawn extends ChessPiece implements IPawn {
+  private whiteDiagonals: Diagonal[] = [
+    [Direction.Up, Direction.Left],
+    [Direction.Up, Direction.Right],
+  ];
+  private blackDiagonals: Diagonal[] = [
+    [Direction.Down, Direction.Left],
+    [Direction.Down, Direction.Right],
+  ];
   constructor(opts: any) {
     super(opts);
     this.type = ChessPieceSlug.P;
@@ -33,26 +41,12 @@ export class Pawn extends ChessPiece implements IPawn {
     return threatenedSquares.filter(c => this.movesService.hasOpponent(c, this.color));
   }
 
-  private get pawnDiagonalMove(): [Direction.Up | Direction.Down, Direction.Left | Direction.Right][] {
-    return this.color === Color.White
-      ? [
-          [Direction.Up, Direction.Left],
-          [Direction.Up, Direction.Right],
-        ]
-      : [
-          [Direction.Down, Direction.Left],
-          [Direction.Down, Direction.Right],
-        ];
+  private get pawnDiagonalMove(): Diagonal[] {
+    return this.color === Color.White ? this.whiteDiagonals : this.blackDiagonals;
   }
 
   private getThreatenedSquares() {
-    return this.movesService.moveDiagonal(this.coords, 1, this.pawnDiagonalMove); /*this.color === Color.White
-      ? [...this.movesService.moveUpLeft(this.coords, 1), ...this.movesService.moveUpRight(this.coords, 1)].filter(
-          Boolean,
-        )
-      : [...this.movesService.moveDownLeft(this.coords, 1), ...this.movesService.moveDownRight(this.coords, 1)].filter(
-          Boolean,
-        );*/
+    return this.movesService.moveOneSquareDiagonal(this.coords, this.pawnDiagonalMove);
   }
 
   private get startingRow(): number {

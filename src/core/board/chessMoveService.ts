@@ -1,4 +1,4 @@
-import { Color, Coords, Diagonal, Direction } from '../types';
+import { Color, Coords, Diagonal, Direction, Horizontal, Vertical } from '../types';
 import { BoardState, ChessBoardService } from './../../core/board/board.service';
 
 type KnightModifiers = [1 | 2 | -1 | -2, 1 | 2 | -1 | -2][];
@@ -15,6 +15,15 @@ export class ChessMoveService {
     [2, -1],
     [2, 1],
   ];
+
+  readonly allDiagonals: Diagonal[] = [
+    [Direction.Up, Direction.Left],
+    [Direction.Up, Direction.Right],
+    [Direction.Down, Direction.Left],
+    [Direction.Down, Direction.Right],
+  ];
+  readonly allVerticals: Vertical[] = [Direction.Up, Direction.Down];
+  readonly allHorizontals: Horizontal[] = [Direction.Left, Direction.Right];
   constructor(boardState?: BoardState) {
     this.chessBoard = new ChessBoardService();
     if (boardState) {
@@ -58,14 +67,37 @@ export class ChessMoveService {
       .filter(c => this.isEmptySquare(c) || !this.hasAlly(c, color));
   }
 
-  moveDiagonal(
-    coords: Coords,
-    limit: number,
-    directions: [Direction.Up | Direction.Down, Direction.Left | Direction.Right][],
-  ): Coords[] {
+  moveOneSquareDiagonal(coords: Coords, directions: Diagonal[] = this.allDiagonals): Coords[] {
     return directions.reduce((acc, [upOrDown, rightOfLeft]) => {
+      acc.push(...this.getNextUntilLimit((c: Coords) => this.getDiagonal(c, [upOrDown, rightOfLeft]), coords, 1, []));
+      return acc;
+    }, [] as Coords[]);
+  }
+
+  moveOneSquareHorizontally(coords: Coords, directions: Horizontal[] = this.allHorizontals): Coords[] {
+    return directions.reduce((acc, rightOrLeft) => {
+      acc.push(...this.getNextUntilLimit((c: Coords) => this.getHorizontal(c, rightOrLeft), coords, 1, []));
+      return acc;
+    }, [] as Coords[]);
+  }
+
+  moveOneSquareVertically(coords: Coords, directions: Vertical[] = this.allVerticals): Coords[] {
+    return directions.reduce((acc, upOrDown) => {
+      acc.push(...this.getNextUntilLimit((c: Coords) => this.getVertical(c, upOrDown), coords, 1, []));
+      return acc;
+    }, [] as Coords[]);
+  }
+
+  moveDiagonally(coords: Coords, color: Color): Coords[] {
+    return this.allDiagonals.reduce((acc, [upOrDown, rightOfLeft]) => {
       acc.push(
-        ...this.getNextUntilLimit((c: Coords) => this.getDiagonal(c, [upOrDown, rightOfLeft]), coords, limit, []),
+        ...this.getNextUntilConditions(
+          (c: Coords) => this.getDiagonal(c, [upOrDown, rightOfLeft]),
+          coords,
+          color,
+          (c: Coords, color: Color) => this.isNotAllySquare(c, color),
+          [],
+        ),
       );
       return acc;
     }, [] as Coords[]);
