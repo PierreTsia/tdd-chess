@@ -1,7 +1,12 @@
 <template>
-  <div :class="[`col-span-1`, `${bgColor}`, `${square.piece ? 'cursor-pointer' : 'cursor: default'}`]">
+  <div
+    :class="[`col-span-1`, `${bgColor}`, `${borderColor}`, `${square.piece ? 'cursor-pointer' : 'cursor: default'}`]"
+  >
     <div v-if="square.piece" class="d-block h-full h-full w-full relative">
-      <component :is="pieceComponent" class="absolute bottom-2 left-1 md:bottom-3 md:left-3 w-3/4 h-3/4" />
+      <component
+        :is="`${square.piece.type}${square.piece.color}`"
+        class="absolute bottom-2 left-1 md:bottom-3 md:left-3 w-3/4 h-3/4"
+      />
     </div>
   </div>
 </template>
@@ -24,21 +29,24 @@ export default defineComponent({
       type: Array,
       default: () => [] as Coords[],
     },
+    activeCoords: {
+      default: null,
+    },
   },
-  setup(props: { square: SquareClass; highlightedSquares: any }) {
-    const pieceComponent = computed(() => {
-      if (!props.square.piece) {
-        return null;
-      }
-
-      return `${props.square.piece.type}${props.square.piece.color}`;
-    });
-
+  setup(props: { square: SquareClass; highlightedSquares: any; activeCoords?: Coords | null }) {
     const isActive = computed(() =>
       props.highlightedSquares.some(
         ([row, col]: Coords) => row === props.square.coords[0] && col === props.square.coords[1],
       ),
     );
+
+    const borderColor = computed(() => {
+      return props.activeCoords &&
+        props.activeCoords[0] === props.square.coords[0] &&
+        props.activeCoords[1] === props.square.coords[1]
+        ? 'border-2 border-red-500'
+        : '';
+    });
 
     const bgColor = computed(() => {
       if (isActive.value) {
@@ -47,7 +55,7 @@ export default defineComponent({
       return props.square.color === Color.Black ? 'bg-green-900' : 'bg-white';
     });
 
-    return { colors: Color, pieceComponent, bgColor, isActive };
+    return { bgColor, isActive, borderColor };
   },
 });
 </script>

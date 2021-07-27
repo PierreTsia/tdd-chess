@@ -5,36 +5,36 @@
         v-for="(square, colIndex) in row"
         :key="`${rowIndex}${colIndex}`"
         :square="square"
-        :highlightedSquares="highlightedSquares"
+        :active-coords="activeCoords"
         @click.native="handleClick(square)"
       />
     </div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 import Square from '/@/components/Square.vue';
 import { Square as SquareClass } from '/@/core/board/square';
+import { ChessBoardType, Coords } from '/@/core/types';
 
 export default defineComponent({
   name: 'ChessBoard',
   components: { Square },
   props: {
     board: {
-      type: Object,
-      default: () => [],
+      default: () => [] as ChessBoardType,
     },
-    highlightedSquares: {
-      type: Array,
-      default: () => [],
+    activeCoords: {
+      default: null,
     },
   },
-  setup(props: { board: any; highlightedSquares: any }, { emit }) {
+  setup(props: { board: ChessBoardType; activeCoords?: Coords | null }, { emit }) {
     const handleClick = (square: SquareClass) => {
-      emit('on-piece-click', square.piece);
+      emit('on-square-click', square);
     };
+    const board = computed(() => props.board);
 
-    return { handleClick };
+    return { handleClick, board };
   },
 });
 </script>

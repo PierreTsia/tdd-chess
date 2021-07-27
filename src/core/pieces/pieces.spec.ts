@@ -100,6 +100,8 @@ describe('|-> Chess Pieces', () => {
     describe('|-> Knight', () => {
       it('a knight moves in a L shape', () => {
         chessBoard.placePiece(ChessPieceSlug.N, [4, 4], Color.White);
+        chessBoard.placePiece(ChessPieceSlug.N, [7, 1], Color.White);
+        chessBoard.placePiece(ChessPieceSlug.N, [0, 1], Color.Black);
         const expectedKnightDestination = [
           [2, 3],
           [2, 5],
@@ -112,9 +114,24 @@ describe('|-> Chess Pieces', () => {
         ];
 
         const knight = chessBoard.board[4][4].piece;
+        const blackKnight = chessBoard.board[0][1].piece;
+        const secondWhiteKnight = chessBoard.board[7][1].piece;
+
 
         const state = chessBoard.getState();
         expect(knight!.getRange(state).sort()).toEqual(expectedKnightDestination.sort());
+        expect(blackKnight!.getRange(state).sort()).toEqual([
+          [2, 0],
+          [2, 2],
+          [1, 3],
+
+        ].sort());
+        expect(secondWhiteKnight!.getRange(state).sort()).toEqual([
+          [5, 2],
+          [5, 0],
+          [6, 3],
+
+        ].sort());
       });
       it('a knight cannot land on a square occupied by ally', () => {
         chessBoard.placePiece(ChessPieceSlug.N, [4, 4], Color.White);
@@ -303,6 +320,25 @@ describe('|-> Chess Pieces', () => {
           [
             [3, 3],
             [3, 4],
+            [3, 5],
+            [4, 3],
+            [4, 5],
+            [5, 3],
+            [5, 4],
+            [5, 5],
+          ].sort(),
+        );
+      });
+      it('a king can not move if it is blocked by ally', () => {
+        //blocked King
+        chessBoard.placePiece(ChessPieceSlug.K, [4, 4], Color.White);
+        chessBoard.placePiece(ChessPieceSlug.P, [3, 4], Color.White);
+        chessBoard.placePiece(ChessPieceSlug.P, [5, 4], Color.Black);
+        const state = chessBoard.getState();
+        const whiteKing = chessBoard.board[4][4].piece;
+        expect(whiteKing!.getRange(state).sort()).toEqual(
+          [
+            [3, 3],
             [3, 5],
             [4, 3],
             [4, 5],

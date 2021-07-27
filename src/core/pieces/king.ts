@@ -13,10 +13,11 @@ export class King extends ChessPiece implements IKing {
     this.type = ChessPieceSlug.K;
   }
   getRange(state: BoardState): Coords[] {
+    this.movesService.populate(state);
     return [
       ...this.movesService.moveOneSquareDiagonal(this.coords),
       ...this.movesService.moveOneSquareVertically(this.coords),
       ...this.movesService.moveOneSquareHorizontally(this.coords),
-    ];
+    ].filter(c => this.movesService.isEmptySquare(c) || !this.movesService.hasAlly(c, this.color));
   }
 }

@@ -1,2 +1,2 @@
 export * from './useTheme';
-export * from './useChessBoard';
+export * from './useChessGame';

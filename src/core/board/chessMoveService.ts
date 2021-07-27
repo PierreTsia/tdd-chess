@@ -32,7 +32,6 @@ export class ChessMoveService {
   }
 
   isEmptySquare([row, col]: Coords): boolean {
-    debugger;
     return !this.chessBoard.board[row][col].piece;
   }
 
@@ -41,9 +40,7 @@ export class ChessMoveService {
   }
 
   hasAlly([row, col]: Coords, color: Color): boolean {
-    const t = !this.isEmptySquare([row, col]) && this.chessBoard.board[row][col].piece!.color === color;
-    debugger;
-    return t;
+    return !this.isEmptySquare([row, col]) && this.chessBoard.board[row][col].piece!.color === color;
   }
 
   populate(boardState: BoardState) {
@@ -178,7 +175,6 @@ export class ChessMoveService {
     const next = moveFn(start);
 
     if (ChessMoveService.isOutOfBound(next) || !conditionFn(next, color)) {
-      debugger;
       return acc;
     } else {
       acc.push(next);
