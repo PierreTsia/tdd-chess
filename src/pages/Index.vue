@@ -18,7 +18,6 @@
       </div>
       <ChessBoard
         :board="board"
-        :highlighted-squares="highlightedSquares"
         :active-coords="activeCoords"
         @on-square-click="onSquareClick"
       />
