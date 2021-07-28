@@ -44,6 +44,7 @@ export class ChessMoveService {
   }
 
   populate(boardState: BoardState) {
+    this.chessBoard.reset()
     boardState.piecesCoords.forEach(({ piece, coords, color }) => {
       this.chessBoard.placePiece(piece, coords, color);
     });
