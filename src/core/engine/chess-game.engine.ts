@@ -11,13 +11,13 @@ interface IGameEngine {
   startGame(): void;
   resetGame(): void;
   playMove({ from, to }: Turn): any;
+  playHistory(turns: [Turn, Turn][]): void;
 }
 
 export class ChessGameEngine implements IGameEngine {
   playing!: Color;
   turns: any[] = [];
   onGoingTurn: any[] = [];
-
   boardService = new ChessBoardService();
 
   constructor() {
@@ -39,11 +39,23 @@ export class ChessGameEngine implements IGameEngine {
 
   public playMove({ from, to }: Turn) {
     if (!this.isValidPieceMove({ from, to }) || !this.isColorTurn(from)) {
-      return;
+      throw new Error(`Invalid move: from ${from} to ${to}`);
     }
     this.boardService.movePiece(from, to);
     this.updateTurns(from, to);
     this.toggleColorPlaying();
+  }
+
+  public playHistory(turns: [Turn, Turn][]) {
+    this.resetGame();
+    turns.forEach(([white, black]) => {
+      this.playMove(white);
+      this.playMove(black);
+    });
+  }
+
+  get board(): ChessBoardType {
+    return this.boardService.board;
   }
 
   private updateTurns(from: Coords, to: Coords) {
@@ -52,10 +64,6 @@ export class ChessGameEngine implements IGameEngine {
       this.turns.push(this.onGoingTurn);
       this.onGoingTurn = [];
     }
-  }
-
-  get board(): ChessBoardType {
-    return this.boardService.board;
   }
 
   private isValidPieceMove({ from, to }: Turn): boolean {

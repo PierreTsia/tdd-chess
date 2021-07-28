@@ -1,4 +1,4 @@
-import { Color, Coords, Diagonal, Direction, Horizontal, Vertical } from '../types';
+import { ChessPieceSlug, Color, Coords, Diagonal, Direction, Horizontal, Vertical } from '../types';
 import { BoardState, ChessBoardService } from './../../core/board/board.service';
 
 type KnightModifiers = [1 | 2 | -1 | -2, 1 | 2 | -1 | -2][];
@@ -64,6 +64,24 @@ export class ChessMoveService {
       .filter(c => this.isEmptySquare(c) || !this.hasAlly(c, color));
   }
 
+  kingSideCastleSquares(color: Color): Coords[] {
+    const startCoords: Coords = color === Color.White ? [7, 4] : [0, 4];
+    const [rookRow, rookCol]: Coords = color === Color.White ? [7, 7] : [0, 0];
+    const hasARook: boolean = this.chessBoard.board[rookRow][rookCol].piece?.type === ChessPieceSlug.R;
+    const path = this.getNextUntilLimit((c: Coords) => this.getHorizontal(c, Direction.Right), startCoords, 2, []);
+
+    return path.every(c => this.isEmptySquare(c)) && hasARook ? [path[path.length - 1]] : [];
+  }
+
+  queenSideCastleSquares(color: Color): Coords[] {
+    const startCoords: Coords = color === Color.White ? [7, 4] : [0, 4];
+    const [rookRow, rookCol]: Coords = color === Color.White ? [7, 0] : [0, 7];
+    const hasARook: boolean = this.chessBoard.board[rookRow][rookCol].piece?.type === ChessPieceSlug.R;
+    const path = this.getNextUntilLimit((c: Coords) => this.getHorizontal(c, Direction.Left), startCoords, 2, []);
+
+    return path.every(c => this.isEmptySquare(c)) && hasARook ? [path[path.length - 1]] : [];
+  }
+
   moveOneSquareDiagonal(coords: Coords, directions: Diagonal[] = this.allDiagonals): Coords[] {
     return directions.reduce((acc, [upOrDown, rightOfLeft]) => {
       acc.push(...this.getNextUntilLimit((c: Coords) => this.getDiagonal(c, [upOrDown, rightOfLeft]), coords, 1, []));
@@ -100,8 +118,11 @@ export class ChessMoveService {
     }, [] as Coords[]);
   }
 
-  moveHorizontally(coords: Coords, color: Color): Coords[] {
-    const directions: [Direction.Left, Direction.Right] = [Direction.Left, Direction.Right];
+  moveHorizontally(
+    coords: Coords,
+    color: Color,
+    directions: [Direction.Left, Direction.Right] = [Direction.Left, Direction.Right],
+  ): Coords[] {
     return directions.reduce((acc, direction) => {
       acc.push(
         ...this.getNextUntilConditions(

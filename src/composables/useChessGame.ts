@@ -8,14 +8,17 @@ export interface IChessGameComposition {
   resetGame(): void;
   movePiece({ from, to }: Turn): void;
   inRangeSquares(piece?: IPiece): Coords[];
+  playHistory(turns: [Turn, Turn][]): void;
   board: Ref<ChessBoardType>;
   currentTurn: Ref<Color>;
+  gameTurns: Ref<Turn[]>;
 }
 
 export function useChessGame(): IChessGameComposition {
   const game = new ChessGameEngine();
   const board = ref([] as any[][]);
   const currentTurn: Ref<Color> = ref(game.playing);
+  const gameTurns: Ref<Turn[]> = ref(game.turns);
 
   onMounted(() => {
     startGame();
@@ -36,6 +39,11 @@ export function useChessGame(): IChessGameComposition {
     update();
   };
 
+  const playHistory = (turns: [Turn, Turn][]) => {
+    game.playHistory(turns);
+    update();
+  };
+
   const inRangeSquares = (piece?: IPiece): Coords[] => {
     if (!piece) {
       return [];
@@ -47,7 +55,8 @@ export function useChessGame(): IChessGameComposition {
   const update = () => {
     board.value = game.board;
     currentTurn.value = game.playing;
+    gameTurns.value = game.turns;
   };
 
-  return { startGame, board, resetGame, inRangeSquares, movePiece, currentTurn };
+  return { startGame, board, resetGame, inRangeSquares, movePiece, currentTurn, gameTurns, playHistory };
 }

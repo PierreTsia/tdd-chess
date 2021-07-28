@@ -15,12 +15,21 @@
         <div class="inline-block mr-2 mt-2">
           <button type="button" class="btn bg-green-500 hover:bg-green-600 min-w-20" @click="startGame">START</button>
         </div>
+
+        <div class="inline-block mr-2 mt-2">
+          <button type="button" class="btn bg-orange-500 hover:bg-green-600 min-w-20" @click="playHistory(test)">
+            PLAY HISTORY
+          </button>
+        </div>
       </div>
-      <ChessBoard
-        :board="board"
-        :active-coords="activeCoords"
-        @on-square-click="onSquareClick"
-      />
+      <ChessBoard :board="board" :active-coords="activeCoords" @on-square-click="onSquareClick" />
+
+      <div class="container p-0 h-auto flex flex-col justify-center align center mt-10">
+        <h2 class="text-center w-full font-sans text-2xl font-bold leading-tight mb-4">Moves</h2>
+        <div v-for="(turn, i) in gameTurns" :key="i" class="block w-full">
+          {{ turn }}
+        </div>
+      </div>
 
       <Footer class="d-block mt-auto" />
     </div>
@@ -39,7 +48,26 @@ export default defineComponent({
   name: 'Home',
   components: { Footer, ChessBoard },
   setup() {
-    const { board, startGame, resetGame, movePiece, currentTurn } = useChessGame();
+    const { board, startGame, resetGame, movePiece, currentTurn, gameTurns, playHistory } = useChessGame();
+
+    const test = [
+      [
+        { from: [6, 4], to: [4, 4] },
+        { from: [1, 4], to: [3, 4] },
+      ],
+      [
+        { from: [7, 6], to: [5, 5] },
+        { from: [0, 1], to: [2, 2] },
+      ],
+      [
+        { from: [6, 3], to: [5, 3] },
+        { from: [1, 3], to: [2, 3] },
+      ],
+      [
+        { from: [7, 1], to: [5, 2] },
+        { from: [0, 2], to: [4, 6] },
+      ],
+    ];
 
     const highlightedSquares: Ref<Coords[]> = ref([]);
     const activePiece: Ref<IPiece | null> = ref(null);
@@ -50,9 +78,14 @@ export default defineComponent({
 
     const onSquareClick = (square: SquareClass) => {
       if (activePiece.value) {
-        movePiece({ from: activePiece.value?.coords, to: square.coords });
-        activePiece.value = null;
-      } else if (square.piece) {
+        try {
+          movePiece({ from: activePiece.value?.coords, to: square.coords });
+        } catch (e) {
+          console.log(e);
+        } finally {
+          activePiece.value = null;
+        }
+      } else if (square.piece && square.piece.color === currentTurn.value) {
         activePiece.value = square.piece;
       } else {
         activePiece.value = null;
@@ -65,10 +98,13 @@ export default defineComponent({
       resetGame,
       highlightedSquares,
       onSquareClick,
+      playHistory,
       movePiece,
       activePiece,
       activeCoords,
       currentTurn,
+      gameTurns,
+      test,
     };
   },
 });

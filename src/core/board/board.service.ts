@@ -1,8 +1,8 @@
 import { Square } from './square';
 import { ChessBoardType, ChessPieceSlug, Color, Coords } from './../types';
-import { PieceFactory as Factory } from './../../core/pieces/piece.factory';
+import { IPiece, PieceFactory as Factory } from './../../core/pieces/piece.factory';
 import { ChessMoveService } from './chessMoveService';
-import { UNITS, ROW_START_ORDER } from './../../core/constants';
+import { ROW_START_ORDER, UNITS } from './../../core/constants';
 
 interface PiecesCoord {
   piece: ChessPieceSlug;
@@ -70,10 +70,30 @@ export class ChessBoardService implements IChessBoard {
     if (!movingPiece) {
       throw new Error('Square is empty');
     }
-    movingPiece.move([destRow, destCol]);
 
+    movingPiece.move([destRow, destCol]);
     this.board[destRow][destCol].piece = movingPiece;
     this.board[srow][scol].piece = null;
+
+    //detect castleMove
+    if (this.isACastleMove(movingPiece, srow, scol, destCol)) {
+      this.handleCastleMoves(destCol, srow);
+    }
+  }
+
+  private handleCastleMoves(kingDestinationCol: number, srow: number) {
+    const rookStartCol = kingDestinationCol === 2 ? 0 : 7;
+    const rookDestCol = rookStartCol === 0 ? 3 : 5;
+    const rook = this.board[srow][rookStartCol].piece!;
+
+    rook.move([srow, rookDestCol]);
+    this.board[srow][rookDestCol].piece = rook;
+    this.board[srow][rookStartCol].piece = null;
+  }
+
+  private isACastleMove(movingPiece: IPiece, srow: number, scol: number, destCol: number) {
+    const kingRow = movingPiece.color === Color.White ? 7 : 0;
+    return movingPiece.type === ChessPieceSlug.K && srow === kingRow && scol === 4 && (destCol === 2 || destCol === 6);
   }
 
   private createPiece(type: ChessPieceSlug, color: Color = Color.White, coords: Coords) {

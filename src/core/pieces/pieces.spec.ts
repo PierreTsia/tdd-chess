@@ -1,9 +1,11 @@
 import { ChessPieceSlug, Color } from './../types';
 import { ChessBoardService } from './../../core/board/board.service';
+import { ChessGameEngine, Turn } from './../../core/engine/chess-game.engine';
 
 describe('|-> Chess Pieces', () => {
   describe('|-> Moves', () => {
     let chessBoard: ChessBoardService;
+
     beforeEach(() => {
       chessBoard = new ChessBoardService();
       chessBoard.init();
@@ -117,21 +119,22 @@ describe('|-> Chess Pieces', () => {
         const blackKnight = chessBoard.board[0][1].piece;
         const secondWhiteKnight = chessBoard.board[7][1].piece;
 
-
         const state = chessBoard.getState();
         expect(knight!.getRange(state).sort()).toEqual(expectedKnightDestination.sort());
-        expect(blackKnight!.getRange(state).sort()).toEqual([
-          [2, 0],
-          [2, 2],
-          [1, 3],
-
-        ].sort());
-        expect(secondWhiteKnight!.getRange(state).sort()).toEqual([
-          [5, 2],
-          [5, 0],
-          [6, 3],
-
-        ].sort());
+        expect(blackKnight!.getRange(state).sort()).toEqual(
+          [
+            [2, 0],
+            [2, 2],
+            [1, 3],
+          ].sort(),
+        );
+        expect(secondWhiteKnight!.getRange(state).sort()).toEqual(
+          [
+            [5, 2],
+            [5, 0],
+            [6, 3],
+          ].sort(),
+        );
       });
       it('a knight cannot land on a square occupied by ally', () => {
         chessBoard.placePiece(ChessPieceSlug.N, [4, 4], Color.White);
@@ -347,6 +350,87 @@ describe('|-> Chess Pieces', () => {
             [5, 5],
           ].sort(),
         );
+      });
+    });
+    describe('|-> Special Moves', () => {
+      describe('|-> Castle', () => {
+        it('should allow King to go to Kingside castle square', () => {
+          const engine = new ChessGameEngine();
+          const preCastleTurns: [Turn, Turn][] = [
+            [
+              { from: [6, 4], to: [4, 4] },
+              { from: [1, 4], to: [3, 4] },
+            ],
+            [
+              { from: [7, 6], to: [5, 5] },
+              { from: [0, 1], to: [2, 2] },
+            ],
+            [
+              { from: [6, 3], to: [5, 3] },
+              { from: [1, 3], to: [2, 3] },
+            ],
+            [
+              { from: [7, 1], to: [5, 2] },
+              { from: [0, 2], to: [4, 6] },
+            ],
+            [
+              { from: [6, 7], to: [5, 7] },
+              { from: [4, 6], to: [3, 7] },
+            ],
+            [
+              { from: [6, 6], to: [4, 6] },
+              { from: [3, 7], to: [2, 6] },
+            ],
+            [
+              { from: [7, 5], to: [6, 6] },
+              { from: [0, 6], to: [2, 5] },
+            ],
+            [
+              { from: [7, 2], to: [3, 6] },
+              { from: [0, 5], to: [1, 4] },
+            ],
+          ];
+          engine.playHistory(preCastleTurns);
+          engine.playMove({ from: [7, 4], to: [7, 6] });
+          expect(engine.board[7][6].piece?.type).toEqual(ChessPieceSlug.K);
+          expect(engine.board[7][5].piece?.type).toEqual(ChessPieceSlug.R);
+          expect(engine.board[7][7].piece).toEqual(null);
+        });
+
+        it('should allow King to go to Queenside castle square', () => {
+          const engine = new ChessGameEngine();
+          const preCastleTurns: [Turn, Turn][] = [
+            [
+              { from: [6, 4], to: [4, 4] },
+              { from: [1, 4], to: [3, 4] },
+            ],
+            [
+              { from: [7, 6], to: [5, 5] },
+              { from: [0, 1], to: [2, 2] },
+            ],
+            [
+              { from: [6, 3], to: [5, 3] },
+              { from: [1, 3], to: [2, 3] },
+            ],
+            [
+              { from: [7, 1], to: [5, 2] },
+              { from: [0, 2], to: [4, 6] },
+            ],
+            [
+              { from: [7, 2], to: [3, 6] },
+              { from: [0, 6], to: [2, 5] },
+            ],
+            [
+              { from: [7, 3], to: [6, 4] },
+              { from: [0, 5], to: [1, 4] },
+            ],
+          ];
+          engine.playHistory(preCastleTurns);
+          engine.playMove({ from: [7, 4], to: [7, 2] });
+          expect(engine.board[7][2].piece?.type).toEqual(ChessPieceSlug.K);
+          expect(engine.board[7][3].piece?.type).toEqual(ChessPieceSlug.R);
+          expect(engine.board[7][0].piece).toEqual(null);
+        });
       });
     });
   });

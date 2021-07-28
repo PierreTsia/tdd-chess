@@ -21,6 +21,10 @@ describe('|-> Game Engine', () => {
     expect(engine.turns).toBeDefined();
   });
 
+  it('should have a playHistory() method accepting array of Turns', () => {
+    expect(engine.playHistory).toBeDefined();
+  });
+
   it('should have a board after startGame', () => {
     engine.startGame();
     expect(engine.boardService).toBeInstanceOf(ChessBoardService);
@@ -53,15 +57,11 @@ describe('|-> Game Engine', () => {
     });
 
     it('should not mutate the board if playMove() is called with incorrect destination', () => {
-      engine.playMove({ from: [6, 2], to: [3, 2] });
-      expect(engine.board[6][2].piece?.type).toEqual(ChessPieceSlug.P);
-      expect(engine.board[3][2].piece).toEqual(null);
+      expect(() => engine.playMove({ from: [6, 2], to: [3, 2] })).toThrow();
     });
 
     it('should not mutate the board if playMove() is called with wrong color', () => {
-      engine.playMove({ from: [1, 2], to: [2, 2] });
-      expect(engine.board[1][2].piece?.type).toEqual(ChessPieceSlug.P);
-      expect(engine.board[5][2].piece).toEqual(null);
+      expect(() => engine.playMove({ from: [1, 2], to: [2, 2] })).toThrow();
     });
 
     it('when white player moves, playing becomes black and vice versa', () => {
