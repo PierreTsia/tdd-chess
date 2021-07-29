@@ -4,7 +4,7 @@ import { IPiece, PieceFactory as Factory } from './../../core/pieces/piece.facto
 import { ChessMoveService } from './chessMoveService';
 import { ROW_START_ORDER, UNITS } from './../../core/constants';
 
-interface PiecesCoord {
+export interface PiecesCoord {
   piece: ChessPieceSlug;
   color: Color;
   coords: Coords;

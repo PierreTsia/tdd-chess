@@ -1,6 +1,7 @@
-import { ChessGameEngine } from './chess-game.engine';
+import { ChessGameEngine, GameStatus } from './chess-game.engine';
 import { ChessPieceSlug, Color } from './../../core/types';
 import { ChessBoardService } from './../../core/board/board.service';
+import { SIMPLE_CHECK } from './../../core/pieces/mocks/game-data.mock';
 
 describe('|-> Game Engine', () => {
   let engine: ChessGameEngine;
@@ -81,6 +82,18 @@ describe('|-> Game Engine', () => {
           { from: [1, 2], to: [2, 2] },
         ],
       ]);
+    });
+  });
+
+  describe('|->Game Events', () => {
+    describe('|-> Check', () => {
+      it('should recognize a check event', () => {
+        const engine = new ChessGameEngine();
+        engine.startGame();
+        expect(engine.status).toEqual(GameStatus.On);
+        engine.playHistory(SIMPLE_CHECK);
+        expect(engine.status).toEqual(GameStatus.Check);
+      });
     });
   });
 });

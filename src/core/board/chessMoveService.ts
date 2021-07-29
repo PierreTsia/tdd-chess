@@ -75,7 +75,6 @@ export class ChessMoveService {
     const hasUnmovedRook: boolean =
       this.chessBoard.board[rookRow][rookCol].piece?.type === ChessPieceSlug.R &&
       !this.chessBoard.board[rookRow][rookCol]?.piece?.hasMoved;
-    debugger;
 
     const path = this.getNextUntilLimit((c: Coords) => this.getHorizontal(c, Direction.Right), startCoords, 2, []);
 

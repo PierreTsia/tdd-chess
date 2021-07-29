@@ -1,13 +1,20 @@
-import { ChessBoardType, Color, Coords } from './../../core/types';
-import { ChessBoardService } from './../../core/board/board.service';
+import { ChessBoardType, ChessPieceSlug, Color, Coords } from './../../core/types';
+import { ChessBoardService, PiecesCoord } from './../../core/board/board.service';
 import { IPiece } from '/@/core/pieces/piece.factory';
 
 export type Turn = { from: Coords; to: Coords; meta?: any };
+export enum GameStatus {
+  On = 'On',
+  Check = 'Check',
+  CheckMate = 'CheckMate',
+  Draw = 'Draw',
+}
 interface IGameEngine {
   playing: Color;
   turns: any[];
   board: ChessBoardType;
   boardService: ChessBoardService;
+  status: GameStatus;
   startGame(): void;
   resetGame(): void;
   playMove({ from, to }: Turn): any;
@@ -18,6 +25,7 @@ export class ChessGameEngine implements IGameEngine {
   playing!: Color;
   turns: any[] = [];
   onGoingTurn: any[] = [];
+  status: GameStatus = GameStatus.On;
   boardService = new ChessBoardService();
 
   constructor() {
@@ -42,15 +50,17 @@ export class ChessGameEngine implements IGameEngine {
       throw new Error(`Invalid move: from ${from} to ${to}`);
     }
     this.boardService.movePiece(from, to);
-    this.updateTurns(from, to);
-    this.toggleColorPlaying();
+
+    this.postMoveHook({ from, to });
   }
 
-  public playHistory(turns: [Turn, Turn][]) {
+  public playHistory(turns: [Turn, Turn?][]) {
     this.resetGame();
     turns.forEach(([white, black]) => {
       this.playMove(white);
-      this.playMove(black);
+      if (black) {
+        this.playMove(black);
+      }
     });
   }
 
@@ -84,5 +94,38 @@ export class ChessGameEngine implements IGameEngine {
 
   private toggleColorPlaying(): void {
     this.playing = this.playing === Color.White ? Color.Black : Color.White;
+  }
+
+  private postMoveHook({ from, to }: Turn) {
+    this.verifyCheck();
+    this.updateTurns(from, to);
+    this.toggleColorPlaying();
+  }
+
+  private getAttackedCoords(piecesCoords: PiecesCoord[]) {
+    const offensiveMaterial = piecesCoords.filter(({ color }) => color === this.playing);
+    return offensiveMaterial.reduce((acc, { coords }) => {
+      const piece: IPiece = this.board[coords[0]][coords[1]].piece!;
+      if (piece) {
+        acc.push(...piece.getRange(this.board));
+      }
+      return acc;
+    }, [] as Coords[]);
+  }
+
+  private isKingThreatened(threatenedCoords: Coords[], threatenedKingCoords: [number, number]) {
+    return threatenedCoords.some(([row, col]) => row === threatenedKingCoords[0] && col === threatenedKingCoords[1]);
+  }
+
+  verifyCheck() {
+    const piecesCoords = this.boardService.getState().piecesCoords;
+    const kingCoords: Coords = piecesCoords.find(
+      pc => pc.piece === ChessPieceSlug.K && pc.color !== this.playing,
+    )!.coords;
+    const threatenedCoords: Coords[] = this.getAttackedCoords(piecesCoords);
+
+    if (this.isKingThreatened(threatenedCoords, kingCoords)) {
+      this.status = GameStatus.Check;
+    }
   }
 }
