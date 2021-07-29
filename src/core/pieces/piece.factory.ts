@@ -1,6 +1,5 @@
-import { ChessPieceSlug, Color, Coords } from './../types';
+import { ChessBoardType, ChessPieceSlug, Color, Coords } from './../types';
 import { Pawn, Bishop, Queen, Knight, King, Rook } from './index';
-import { BoardState } from './../../core/board/board.service';
 import { ChessMoveService } from './../../core/board/chessMoveService';
 
 export type ConditionFn = (args?: any) => boolean;
@@ -10,11 +9,10 @@ export interface IPiece {
   color: Color;
   movesService: ChessMoveService;
   coords: Coords;
-  getRange(state: BoardState): Coords[];
+  hasMoved: boolean;
+  getRange(board: ChessBoardType): Coords[];
   move(destination: Coords): void;
 }
-
-
 
 interface IChessPiecesClasses {
   Pawn: Pawn;

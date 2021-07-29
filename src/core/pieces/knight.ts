@@ -1,8 +1,7 @@
 import { IPiece } from './piece.factory';
 import { ChessMoveService } from '../board/chessMoveService';
 import { ChessPiece } from './chess-piece';
-import { ChessPieceSlug, Coords } from './../../core/types';
-import { BoardState } from './../../core/board/board.service';
+import { ChessBoardType, ChessPieceSlug, Coords } from './../../core/types';
 
 interface IKnight extends IPiece {}
 
@@ -14,8 +13,8 @@ export class Knight extends ChessPiece implements IKnight {
     this.type = ChessPieceSlug.N;
   }
 
-  getRange(state: BoardState): Coords[] {
-    this.movesService.populate(state);
+  getRange(board: ChessBoardType): Coords[] {
+    super.getRange(board);
     return this.movesService.knightMoves(this.coords, this.color);
   }
 }

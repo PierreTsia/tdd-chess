@@ -74,19 +74,21 @@ export class ChessBoardService implements IChessBoard {
     movingPiece.move([destRow, destCol]);
     this.board[destRow][destCol].piece = movingPiece;
     this.board[srow][scol].piece = null;
+    movingPiece.hasMoved = true;
 
-    //detect castleMove
+    // castleMove
     if (this.isACastleMove(movingPiece, srow, scol, destCol)) {
-      this.handleCastleMoves(destCol, srow);
+      this.moveCastlingRook(destCol, srow);
     }
   }
 
-  private handleCastleMoves(kingDestinationCol: number, srow: number) {
+  private moveCastlingRook(kingDestinationCol: number, srow: number) {
     const rookStartCol = kingDestinationCol === 2 ? 0 : 7;
     const rookDestCol = rookStartCol === 0 ? 3 : 5;
     const rook = this.board[srow][rookStartCol].piece!;
 
     rook.move([srow, rookDestCol]);
+    rook.hasMoved = true;
     this.board[srow][rookDestCol].piece = rook;
     this.board[srow][rookStartCol].piece = null;
   }

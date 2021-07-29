@@ -1,7 +1,6 @@
-import { ChessPieceSlug, Coords } from './../types';
+import { ChessBoardType, ChessPieceSlug, Coords } from './../types';
 import { IPiece } from './piece.factory';
 import { ChessMoveService } from '../board/chessMoveService';
-import { BoardState } from './../../core/board/board.service';
 import { ChessPiece } from './chess-piece';
 
 interface IBishop extends IPiece {}
@@ -14,8 +13,8 @@ export class Bishop extends ChessPiece implements IBishop {
     this.type = ChessPieceSlug.B;
   }
 
-  getRange(board: BoardState): Coords[] {
-    this.movesService.populate(board);
+  getRange(board: ChessBoardType): Coords[] {
+   super.getRange(board);
     return [...this.movesService.moveDiagonally(this.coords, this.color)];
   }
 }

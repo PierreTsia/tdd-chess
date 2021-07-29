@@ -1,6 +1,5 @@
-import { ChessPieceSlug, Color, Coords, Diagonal, Direction } from './../types';
+import { ChessBoardType, ChessPieceSlug, Color, Coords, Diagonal, Direction } from './../types';
 import { ChessPiece } from './chess-piece';
-import { BoardState } from './../../core/board/board.service';
 import { IPiece } from './../../core/pieces/piece.factory';
 
 interface IPawn extends IPiece {
@@ -22,8 +21,8 @@ export class Pawn extends ChessPiece implements IPawn {
     this.coords = opts.coords;
   }
 
-  getRange(board: BoardState): Coords[] {
-    this.movesService.populate(board);
+  getRange(board: ChessBoardType): Coords[] {
+    super.getRange(board);
     const advanceMove = this.pawnMove(this.pawnReach).filter(c => this.movesService.isEmptySquare(c));
     return [...advanceMove, ...this.takeMoves];
   }

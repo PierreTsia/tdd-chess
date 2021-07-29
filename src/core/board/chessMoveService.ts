@@ -1,4 +1,4 @@
-import { ChessPieceSlug, Color, Coords, Diagonal, Direction, Horizontal, Vertical } from '../types';
+import { ChessBoardType, ChessPieceSlug, Color, Coords, Diagonal, Direction, Horizontal, Vertical } from '../types';
 import { BoardState, ChessBoardService } from './../../core/board/board.service';
 
 type KnightModifiers = [1 | 2 | -1 | -2, 1 | 2 | -1 | -2][];
@@ -44,10 +44,14 @@ export class ChessMoveService {
   }
 
   populate(boardState: BoardState) {
-    this.chessBoard.reset()
+    this.chessBoard.reset();
     boardState.piecesCoords.forEach(({ piece, coords, color }) => {
       this.chessBoard.placePiece(piece, coords, color);
     });
+  }
+
+  public setBoard(board: ChessBoardType) {
+    this.chessBoard.board = board;
   }
 
   static isOutOfBound(coords: Coords) {
@@ -68,19 +72,25 @@ export class ChessMoveService {
   kingSideCastleSquares(color: Color): Coords[] {
     const startCoords: Coords = color === Color.White ? [7, 4] : [0, 4];
     const [rookRow, rookCol]: Coords = color === Color.White ? [7, 7] : [0, 0];
-    const hasARook: boolean = this.chessBoard.board[rookRow][rookCol].piece?.type === ChessPieceSlug.R;
+    const hasUnmovedRook: boolean =
+      this.chessBoard.board[rookRow][rookCol].piece?.type === ChessPieceSlug.R &&
+      !this.chessBoard.board[rookRow][rookCol]?.piece?.hasMoved;
+    debugger;
+
     const path = this.getNextUntilLimit((c: Coords) => this.getHorizontal(c, Direction.Right), startCoords, 2, []);
 
-    return path.every(c => this.isEmptySquare(c)) && hasARook ? [path[path.length - 1]] : [];
+    return path.every(c => this.isEmptySquare(c)) && hasUnmovedRook ? [path[path.length - 1]] : [];
   }
 
   queenSideCastleSquares(color: Color): Coords[] {
     const startCoords: Coords = color === Color.White ? [7, 4] : [0, 4];
     const [rookRow, rookCol]: Coords = color === Color.White ? [7, 0] : [0, 7];
-    const hasARook: boolean = this.chessBoard.board[rookRow][rookCol].piece?.type === ChessPieceSlug.R;
+    const hasUnmovedRooked: boolean =
+      this.chessBoard.board[rookRow][rookCol].piece?.type === ChessPieceSlug.R &&
+      !this.chessBoard.board[rookRow][rookCol]?.piece?.hasMoved;
     const path = this.getNextUntilLimit((c: Coords) => this.getHorizontal(c, Direction.Left), startCoords, 2, []);
 
-    return path.every(c => this.isEmptySquare(c)) && hasARook ? [path[path.length - 1]] : [];
+    return path.every(c => this.isEmptySquare(c)) && hasUnmovedRooked ? [path[path.length - 1]] : [];
   }
 
   moveOneSquareDiagonal(coords: Coords, directions: Diagonal[] = this.allDiagonals): Coords[] {

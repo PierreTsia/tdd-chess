@@ -22,7 +22,6 @@ describe('|-> Chess Pieces', () => {
         chessBoard.placePiece(ChessPieceSlug.P, [4, 7], color);
         const pawn = chessBoard.board[4][4].piece;
         const pawn2 = chessBoard.board[4][7].piece;
-        const state = chessBoard.getState();
         const expectedCoords =
           color === Color.White
             ? [
@@ -34,8 +33,8 @@ describe('|-> Chess Pieces', () => {
                 [5, 7],
               ];
 
-        expect(pawn!.getRange(state)).toEqual([expectedCoords[0]]);
-        expect(pawn2!.getRange(state)).toEqual([expectedCoords[1]]);
+        expect(pawn!.getRange(chessBoard.board)).toEqual([expectedCoords[0]]);
+        expect(pawn2!.getRange(chessBoard.board)).toEqual([expectedCoords[1]]);
       });
 
       it('a pawn can move 2 squares if it has not moved yet', () => {
@@ -43,12 +42,11 @@ describe('|-> Chess Pieces', () => {
         chessBoard.placePiece(ChessPieceSlug.P, [1, 4], Color.Black);
         const whitePawn = chessBoard.board[6][4].piece;
         const blackPawn = chessBoard.board[1][4].piece;
-        const state = chessBoard.getState();
-        expect(whitePawn!.getRange(state)).toEqual([
+        expect(whitePawn!.getRange(chessBoard.board)).toEqual([
           [5, 4],
           [4, 4],
         ]);
-        expect(blackPawn!.getRange(state)).toEqual([
+        expect(blackPawn!.getRange(chessBoard.board)).toEqual([
           [2, 4],
           [3, 4],
         ]);
@@ -61,9 +59,8 @@ describe('|-> Chess Pieces', () => {
         chessBoard.placePiece(ChessPieceSlug.P, [5, 5], Color.Black);
         const threateningWhitePawn = chessBoard.board[6][4].piece;
         const aloneWhitePawn = chessBoard.board[4][0].piece;
-        const state = chessBoard.getState();
-        expect(aloneWhitePawn!.getRange(state)).toEqual([[3, 0]]);
-        expect(threateningWhitePawn!.getRange(state)).toEqual([
+        expect(aloneWhitePawn!.getRange(chessBoard.board)).toEqual([[3, 0]]);
+        expect(threateningWhitePawn!.getRange(chessBoard.board)).toEqual([
           [5, 4],
           [4, 4],
           [5, 3],
@@ -79,13 +76,12 @@ describe('|-> Chess Pieces', () => {
         chessBoard.placePiece(ChessPieceSlug.P, [6, 5], Color.White);
         const threateningBlackPawn1 = chessBoard.board[5][4].piece;
         const threateningBlackPawn2 = chessBoard.board[4][0].piece;
-        const state = chessBoard.getState();
-        expect(threateningBlackPawn1!.getRange(state)).toEqual([
+        expect(threateningBlackPawn1!.getRange(chessBoard.board)).toEqual([
           [6, 4],
           [6, 3],
           [6, 5],
         ]);
-        expect(threateningBlackPawn2!.getRange(state)).toEqual([
+        expect(threateningBlackPawn2!.getRange(chessBoard.board)).toEqual([
           [5, 0],
           [5, 1],
         ]);
@@ -95,8 +91,7 @@ describe('|-> Chess Pieces', () => {
         chessBoard.placePiece(ChessPieceSlug.P, [3, 4], Color.White);
         chessBoard.placePiece(ChessPieceSlug.P, [2, 4], Color.Black);
         const blockedPawn = chessBoard.board[3][4].piece;
-        const state = chessBoard.getState();
-        expect(blockedPawn!.getRange(state)).toEqual([]);
+        expect(blockedPawn!.getRange(chessBoard.board)).toEqual([]);
       });
     });
     describe('|-> Knight', () => {
@@ -119,16 +114,15 @@ describe('|-> Chess Pieces', () => {
         const blackKnight = chessBoard.board[0][1].piece;
         const secondWhiteKnight = chessBoard.board[7][1].piece;
 
-        const state = chessBoard.getState();
-        expect(knight!.getRange(state).sort()).toEqual(expectedKnightDestination.sort());
-        expect(blackKnight!.getRange(state).sort()).toEqual(
+        expect(knight!.getRange(chessBoard.board).sort()).toEqual(expectedKnightDestination.sort());
+        expect(blackKnight!.getRange(chessBoard.board).sort()).toEqual(
           [
             [2, 0],
             [2, 2],
             [1, 3],
           ].sort(),
         );
-        expect(secondWhiteKnight!.getRange(state).sort()).toEqual(
+        expect(secondWhiteKnight!.getRange(chessBoard.board).sort()).toEqual(
           [
             [5, 2],
             [5, 0],
@@ -151,8 +145,7 @@ describe('|-> Chess Pieces', () => {
         ];
 
         const knight = chessBoard.board[4][4].piece;
-        const state = chessBoard.getState();
-        expect(knight!.getRange(state).sort()).toEqual(expectedKnightDestination.sort());
+        expect(knight!.getRange(chessBoard.board).sort()).toEqual(expectedKnightDestination.sort());
       });
     });
     describe('|-> Rook', () => {
@@ -161,9 +154,8 @@ describe('|-> Chess Pieces', () => {
         chessBoard.placePiece(ChessPieceSlug.R, [0, 0], Color.Black);
         const whiteRook = chessBoard.board[4][4].piece;
         const blackRook = chessBoard.board[0][0].piece;
-        const state = chessBoard.getState();
 
-        expect(whiteRook!.getRange(state).sort()).toEqual(
+        expect(whiteRook!.getRange(chessBoard.board).sort()).toEqual(
           [
             [0, 4],
             [1, 4],
@@ -181,7 +173,7 @@ describe('|-> Chess Pieces', () => {
             [4, 7],
           ].sort(),
         );
-        expect(blackRook!.getRange(state).sort()).toEqual(
+        expect(blackRook!.getRange(chessBoard.board).sort()).toEqual(
           [
             [1, 0],
             [2, 0],
@@ -209,8 +201,7 @@ describe('|-> Chess Pieces', () => {
         const whiteRook = chessBoard.board[4][4].piece;
         // const blockingWhitePawn = chessBoard.board[6][4].piece;
 
-        const state = chessBoard.getState();
-        expect(whiteRook!.getRange(state).sort()).toEqual(
+        expect(whiteRook!.getRange(chessBoard.board).sort()).toEqual(
           [
             [0, 4],
             [1, 4],
@@ -239,9 +230,8 @@ describe('|-> Chess Pieces', () => {
         // ally blocking pawn
         chessBoard.placePiece(ChessPieceSlug.P, [3, 2], Color.Black);
 
-        const state = chessBoard.getState();
         const whiteBishop = chessBoard.board[4][4].piece;
-        expect(whiteBishop!.getRange(state).sort()).toEqual(
+        expect(whiteBishop!.getRange(chessBoard.board).sort()).toEqual(
           [
             [7, 1],
             [6, 2],
@@ -262,7 +252,7 @@ describe('|-> Chess Pieces', () => {
 
         const blackBishop = chessBoard.board[4][1].piece;
 
-        expect(blackBishop!.getRange(state).sort()).toEqual(
+        expect(blackBishop!.getRange(chessBoard.board).sort()).toEqual(
           [
             [5, 0],
             [3, 0],
@@ -279,8 +269,7 @@ describe('|-> Chess Pieces', () => {
         chessBoard.placePiece(ChessPieceSlug.Q, [4, 4], Color.White);
 
         const whiteQueen = chessBoard.board[4][4].piece;
-        const state = chessBoard.getState();
-        expect(whiteQueen!.getRange(state).sort()).toEqual(
+        expect(whiteQueen!.getRange(chessBoard.board).sort()).toEqual(
           [
             [0, 4],
             [1, 4],
@@ -317,9 +306,8 @@ describe('|-> Chess Pieces', () => {
       it('a king can go in any direction but only one square away', () => {
         //alone King
         chessBoard.placePiece(ChessPieceSlug.K, [4, 4], Color.White);
-        const state = chessBoard.getState();
         const whiteKing = chessBoard.board[4][4].piece;
-        expect(whiteKing!.getRange(state).sort()).toEqual(
+        expect(whiteKing!.getRange(chessBoard.board).sort()).toEqual(
           [
             [3, 3],
             [3, 4],
@@ -337,9 +325,8 @@ describe('|-> Chess Pieces', () => {
         chessBoard.placePiece(ChessPieceSlug.K, [4, 4], Color.White);
         chessBoard.placePiece(ChessPieceSlug.P, [3, 4], Color.White);
         chessBoard.placePiece(ChessPieceSlug.P, [5, 4], Color.Black);
-        const state = chessBoard.getState();
         const whiteKing = chessBoard.board[4][4].piece;
-        expect(whiteKing!.getRange(state).sort()).toEqual(
+        expect(whiteKing!.getRange(chessBoard.board).sort()).toEqual(
           [
             [3, 3],
             [3, 5],
@@ -396,7 +383,6 @@ describe('|-> Chess Pieces', () => {
           expect(engine.board[7][5].piece?.type).toEqual(ChessPieceSlug.R);
           expect(engine.board[7][7].piece).toEqual(null);
         });
-
         it('should allow King to go to Queenside castle square', () => {
           const engine = new ChessGameEngine();
           const preCastleTurns: [Turn, Turn][] = [
@@ -430,6 +416,35 @@ describe('|-> Chess Pieces', () => {
           expect(engine.board[7][2].piece?.type).toEqual(ChessPieceSlug.K);
           expect(engine.board[7][3].piece?.type).toEqual(ChessPieceSlug.R);
           expect(engine.board[7][0].piece).toEqual(null);
+        });
+        it('should not allow to castle if king or rook has already been moved', () => {
+          const engine = new ChessGameEngine();
+          const preCastleTurns: [Turn, Turn][] = [
+            [
+              { from: [6, 4], to: [4, 4] },
+              { from: [1, 4], to: [3, 4] },
+            ],
+            [
+              { from: [7, 6], to: [5, 5] },
+              { from: [0, 6], to: [2, 5] },
+            ],
+            [
+              { from: [7, 5], to: [6, 4] },
+              { from: [0, 5], to: [1, 4] },
+            ],
+            [
+              { from: [7, 7], to: [7, 6] },
+              { from: [0, 4], to: [0, 6] },
+            ],
+            [
+              { from: [7, 6], to: [7, 7] },
+              { from: [0, 1], to: [2, 2] },
+            ],
+          ];
+
+          engine.playHistory(preCastleTurns);
+
+          expect(() => engine.playMove({ from: [7, 4], to: [7, 6] })).toThrow();
         });
       });
     });

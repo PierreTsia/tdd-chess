@@ -71,8 +71,7 @@ export class ChessGameEngine implements IGameEngine {
     const [destRow, destCol] = to;
     const movingPiece: IPiece = this.board[row][col].piece!;
     if (movingPiece) {
-      const state = this.boardService.getState();
-      const range = movingPiece.getRange(state);
+      const range = movingPiece.getRange(this.board);
       return range.some(([row, col]: Coords) => row === destRow && col === destCol);
     }
     return false;

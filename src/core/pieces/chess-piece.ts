@@ -1,12 +1,12 @@
 import { IPiece } from './../../core/pieces/piece.factory';
-import { ChessPieceSlug, Color, Coords } from './../../core/types';
+import { ChessBoardType, ChessPieceSlug, Color, Coords } from './../../core/types';
 import { ChessMoveService } from './../../core/board/chessMoveService';
-import { BoardState } from './../../core/board/board.service';
 
 export class ChessPiece implements IPiece {
   readonly color: Color;
   type!: ChessPieceSlug;
   coords: Coords;
+  hasMoved: boolean = false;
   movesService: ChessMoveService = new ChessMoveService();
   constructor(opts: any) {
     this.color = opts.color;
@@ -14,7 +14,8 @@ export class ChessPiece implements IPiece {
     this.type = opts.type;
   }
 
-  getRange(state: BoardState): Coords[] {
+  getRange(board: ChessBoardType): Coords[] {
+    this.movesService.setBoard(board)
     return [];
   }
 
