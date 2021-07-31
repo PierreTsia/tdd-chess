@@ -1,13 +1,12 @@
 import { ChessGameEngine, Turn } from '/@/core/engine/chess-game.engine';
-import { ChessBoardType, Color, Coords } from '/@/core/types';
+import { ChessBoardType, Color } from '/@/core/types';
 import { onMounted, ref, Ref } from 'vue';
-import { IPiece } from '/@/core/pieces/piece.factory';
+import { Square } from '/@/core/board/square';
 
 export interface IChessGameComposition {
   startGame(): void;
   resetGame(): void;
   movePiece({ from, to }: Turn): void;
-  inRangeSquares(piece?: IPiece): Coords[];
   playHistory(turns: [Turn, Turn][]): void;
   board: Ref<ChessBoardType>;
   currentTurn: Ref<Color>;
@@ -16,7 +15,7 @@ export interface IChessGameComposition {
 
 export function useChessGame(): IChessGameComposition {
   const game = new ChessGameEngine();
-  const board = ref([] as any[][]);
+  const board: Ref<Square[][]> = ref([]);
   const currentTurn: Ref<Color> = ref(game.playing);
   const gameTurns: Ref<Turn[]> = ref(game.turns);
 
@@ -44,19 +43,11 @@ export function useChessGame(): IChessGameComposition {
     update();
   };
 
-  const inRangeSquares = (piece?: IPiece): Coords[] => {
-    if (!piece) {
-      return [];
-    }
-    const state = game.boardService.getState();
-    return piece.getRange(state);
-  };
-
   const update = () => {
     board.value = game.board;
     currentTurn.value = game.playing;
     gameTurns.value = game.turns;
   };
 
-  return { startGame, board, resetGame, inRangeSquares, movePiece, currentTurn, gameTurns, playHistory };
+  return { startGame, board, resetGame, movePiece, currentTurn, gameTurns, playHistory };
 }
